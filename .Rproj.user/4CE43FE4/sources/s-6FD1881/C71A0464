@@ -1,0 +1,26 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1581049210890.000,
+    "dirty" : true,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2191201703",
+    "id" : "C71A0464",
+    "lastKnownWriteTime" : 1581220242,
+    "last_content_update" : 1581220320146,
+    "path" : "H:/Algoritma/automated-reporting/app.R",
+    "project_path" : "app.R",
+    "properties" : {
+        "cursorPosition" : "77,28",
+        "scrollLine" : "68",
+        "tempName" : "Untitled1"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

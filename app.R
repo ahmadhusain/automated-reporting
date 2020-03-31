@@ -7,12 +7,10 @@ library(shiny)
 
 ui <- fluidPage(
   
-  sliderInput(
-    inputId = "slider", 
-    label = "Slider",
-    min = 1,
-    max = 100,
-    value = 50
+  selectInput(
+    inputId = "gender", 
+    label = "Gender",
+    choices = c("female", "male")
   ),
   
   textInput(
@@ -21,7 +19,7 @@ ui <- fluidPage(
     value = "report"
   ), 
   
-
+  
   radioButtons(
     inputId = "format", 
     label = "Choose output format", 
@@ -51,19 +49,19 @@ server <- function(input, output, session) {
     )
   })
   
-
+  
   output$report <- downloadHandler(
     
     filename = input$filename,
     
     content = function(file) {
       
-      tempReport <- file.path("temp/report.Rmd")
-      file.copy(from = "report.Rmd", to = tempReport, overwrite = TRUE)
+      tempReport <- file.path("temp/template.Rmd")
+      file.copy(from = "templated.Rmd", to = tempReport, overwrite = TRUE)
       
       # set up parameters to pas to Rmd document
       
-      paramslist <- list(n = input$slider)
+      paramslist <- list(gender = input$gender)
       
       # knit the document, passing in the `params` list, and eval it in a
       # child of the global environment (this isolates the code in the document
@@ -75,8 +73,7 @@ server <- function(input, output, session) {
         params = paramslist,
         envir = new.env(parent = globalenv()), 
         output_format = format(),
-        output_dir = getwd(),
-        knit_root_dir = getwd()
+        output_dir = getwd()
       )
       
     }

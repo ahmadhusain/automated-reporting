@@ -1,0 +1,285 @@
+---
+title: "Descriptive Statistics"
+author: "Team Algoritma"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    df_print: paged
+    highlight: breezedark
+    theme: united
+    number_section: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+Statisticians and data scientists use descriptive statistics to summarize and describe a large number of measurements. Many times, this task is accompanied with graphs and plots that help describe the numerical summary of data. When data science is applied in the business context, an example of descriptive statistic is the average number of transactions per month. Another example is the percentage of e-commerce transactions with a voucher code applied. The simple rule is that descriptive statistics do not involve generalizing beyond the data we have obtained, and are merely descriptive of what we have at hand.
+
+# Measure of Central Tendency
+
+The measure of central tendency enable us to compare two or more distribution pertaining to the same time period or within the same distribution over time. 
+
+```{r}
+attrition <- read.csv("data_input/data-attrition.csv")
+```
+
+```{r}
+head(attrition)
+```
+
+
+## Mean
+
+Often times in the exploratory data analysis phase, we want to get a sense of what the *most representative score* of a particular measurement is. We often simplify this idea by referring to it as the “average”, but there are in fact, three measures of central tendency that you need to have in your statistical toolset.
+
+The most popular measure of central tendency is the mean, which is sometimes represented as $\bar x$ when computed on a *sample* and represented as $\mu$ when computed on a population. Mean is really the sum of all your measurements, divided by the number of measurements, and works best on data that has an even distribution or a normal distribution (don’t worry if the idea of a normal distribution isn’t clear - we’ll get to that in a while!). In R, the `mean` function will return the mean:
+
+```{r}
+sum(attrition$monthly_income)/length(attrition$monthly_income)
+```
+
+
+```{r}
+mean(attrition$monthly_income)
+```
+
+Mean is based on all the items in a series, a change in the value of any item will lead to a change in the value of the mean. So in the case of highly skewed distribution, the mean may get distorted on account of a few items with extreme values. In such a case, it may not appropriate for represent the characteristics of the distribution.
+
+## Median
+
+The median is the point of value that cuts the distribution into two equal halves such that 50% of the observations are below it. To find this value, we would order the observations and find the middle value that separates the distribution into two equal halves.
+
+```{r}
+median(attrition$monthly_income)
+```
+
+We need to be cautious when applying the mean on data with a skewed distribution because the mean may not be the best candidate for a most representative score compared to other measures of central tendency. For example, a company surveys its employees household income and posted the following monthly household income (IDR, in Mil):
+
+```{r}
+salary <- c(7.8, 7.5, 6, 7.5, 4.5, 105, 45, 7.5, 5.5, 4)
+mean(salary)
+```
+
+```{r}
+median(salary)
+```
+
+While the median puts that figure at about 7.25, the mean is about 2.67 times higher and is not truly representative of the actual household income. While most of the employees have a combined household earning of less than 8 mil, the mean value of our household income would have believe that the average household income of our employees is in fact more than 20 mil IDR.
+
+The median in this case is a better measure of centrality because it is not sensitive to the outlier data.
+
+If we are in fact, *required* to compute the mean on data with skewed distribution, another technique to reduce the influence of outlier data is to use a slight variation of the mean, called the Trimmed Mean. The trimmed mean removes a small designated percentage of the largest and smallest values before computing the mean. A trimmed mean that computes the middle 95% of the distribution can be performed in R fairly easily:
+
+```{r}
+# 5% of observations to be trimmed
+mean(salary, trim = 0.2)
+```
+
+## Mode
+
+When there are discreet values for a variable, the mode refers to the value that occurs most frequently. This statistic is rarely used in practice
+
+```{r}
+most <- function(x){
+  names(sort(-table(x)))[1]
+}
+
+most(attrition$education_field)
+```
+
+Because R do not have a built-in way of computing the mode, we wrote the code above to tabulate our data (using `table`), multiply the calculation by -1 (and hence giving it the effect of sorting our data in descending order) and then pick the first value.
+
+*Dive Deeper*
+
+The following data give the savings bank accounts balances of nine sample household selected in a survey. 
+
+```{r}
+savings <- c(745, 2000, 1500, 68000, 461, 549, 3750, 1800, 4795)
+```
+
+1. Find the mean and the median for these data
+2. Do these data contain an outlier? if so, what we can do to dealing with extreme number?
+3. Which of these two summary measures is more appropirate for this series?
+
+# Measures of Spread
+
+In the previous chapter, we have explained the measures of central tendency. It may be noted that these measures do not indicate the extent of dispersion or variability in a distribution. Measures of spread measures the extent to which **value in a distribution differ from each other**. In practice, it is far easier to compute the distance between the values to their mean and when we square each one of these distances and add them all up the average1 of that result is known as **variance**. Taking the square root of the variance will result in the **standard deviation**. Just like the mean, standard deviation is the “expected value” of how far the scores deviate from the mean.
+
+## Variance
+
+```{r}
+hourly_rate <- attrition$hourly_rate
+sum((hourly_rate - mean(hourly_rate))^2)/(length(hourly_rate) - 1)
+```
+
+```{r}
+var(hourly_rate)
+```
+
+## Standard Deviation
+
+And taking the square root of variance yields the standard deviation:
+
+```{r}
+sqrt(var(hourly_rate))
+```
+
+```{r}
+sd(hourly_rate)
+```
+
+Variance and standard deviation are always positive when the values are not identical. When there’s no variability, the variance is 0. Because variance and standard deviation are sensitive to every value, they may not be the most “representative” measurement for skewed data.
+
+## Range
+
+Other measurements of the spread are the **range** and the **interquartile range** The range is the distance from our smallest measurement to the largest one:
+
+```{r}
+max(hourly_rate) - min(hourly_rate)
+```
+
+```{r}
+diff(range(hourly_rate))
+```
+
+## IQR
+
+The interquartile range is the range computed for the middle 50% of the distribution:
+
+```{r}
+IQR(hourly_rate)
+```
+
+```{r}
+as.numeric(quantile(hourly_rate, 0.75) - quantile(hourly_rate, 0.25))
+```
+
+While we can use `quantile()` to obtain the 3rd and 1st quartile individually, these two figures are also presented together with the 0th (the `min()`), 50th (the `median()`), and the 100th (the `max()`) quartiles: together they are called the five-number summary.
+
+When we call `fivenum()`, we get this summary that we can use as a measure of variation for even potentially skewed data:
+
+```{r}
+fivenum(attrition$hourly_rate)
+```
+
+From the above, observe that the absolute lowest profit (the `min`) approximates 6,600 and the highest profit approximates 8,400 (the `max`); Observe also that 25% of our transactions make a profit of less than 1.728. Half of the transactions (the middle 50% of the value) make a profit between 1.728 and 29.364 - recall that this range is called the *interquartile range* (IQR). When we use `summary()` on continuous data, we’ll get the five number summary and the mean in return:
+
+```{r}
+summary(attrition$hourly_rate)
+```
+
+## Uses of the measure of spread
+
+Discussion: 
+
+- In a small business firm, two typist of employed. Typist A and typist B. Here is the data number of typed pages from both typist in 10 days. Which typist shows greater consistency in his output?
+
+```{r}
+typist_a <- c(28.1, 30.4, 34.2, 30.2, 32.2, 34.7, 32.9, 29.9, 33.7, 39.1)
+typist_b <- c(72.2, 48.0, 50.4, 32.2, 40.6, 59.7, 63.6, 31.2, 49.6, 31.0)
+```
+
+Solution: 
+
+```{r}
+paste("mean typist A:", mean(typist_a))
+paste("mean typist B:", mean(typist_b))
+```
+
+```{r}
+paste("Standard Deviation typist A:", round(var(typist_a), digits = 2))
+paste("Standard Deviation typist B:", round(var(typist_b), digits = 2))
+```
+
+These calculation indicate that althoufh typist B types out more pages on average (47.85 per a day), there is a greater variation in his output as compared to that of typist A. We can say this in a different way: Though typist A's daily output is much less, he is more consistent than typist B. 
+
+Discussion 2:
+
+Which financial assets has more votality in their annual price?
+
+```{r}
+price.coins <- c(1.4, 0.4, 0.8, 1.1, 1.8, 2.2, 2.3, 1.2)
+price.oil <- c(1.6, 1.2, 1.9, 0.8, 0.6, 1.5, 2.1, 1.5)
+```
+
+The primary measure of votality used by stock traders and financial analysts is standard deviation, and recall that this metric reflects the average amount of an item’s price over a period of time. While the price for our fictional “oil” asset and “coins” asset averaged out to be USD 1.4 over time, which of these two present a higher votality than the other?
+
+# Covariance and Correlation
+
+Statistical methods of measures of central tendency, measure of spread are helpful for the purpose of comparison and analysis of distribution involving only one variable. However, decribing the relationship between two or more variables, is another important part of statistics. In many business research situations, the key of to decision making lies in understanding relationship between two or more variables. The statistical methods of *Covariance* and *Correlation* are helpful in knowing the relationship between two or more vairbles.
+
+In all these cases involving two or more variables, we may be interested in seeing:
+  - if there is any association between the variables;
+  - if there is an association, is it strong enough to be useful;
+  - if so, what form the relationship between the two variables takes
+  
+## Covariance
+
+When we have two samples, X and Y, of the same size, then the covariance is an estimate of how variation in X is related to the variation in Y. Covariance measures how two variables covary and is represented as:
+
+$$Cov(X,Y) = \frac{1}{n-1}\sum_{i = 1}^{i}(X_i - \mu x)(Y_i - \mu y)$$
+
+```{r}
+years_at_company <- attrition$years_at_company
+monthly_income <- attrition$monthly_income
+```
+
+
+```{r}
+sum((years_at_company - mean(years_at_company))*(monthly_income - mean(monthly_income)))/(length(monthly_income)-1)
+```
+
+```{r}
+cor(years_at_company, monthly_income)
+```
+
+Getting a positive covariance means that higher X tends to be associated with larger Y (and vice versa). The covariance of any variable with itself is its variance. Notice also that cov(X,Y) = cov(Y,X). Notice also that cov(X,Y) = cov(Y,X).
+
+```{r}
+cov(years_at_company, years_at_company)
+```
+
+```{r}
+var(years_at_company)
+```
+
+But there is a problem with covariances: they are hard to compare because variables are sometimes expressed in different units or scales. It is hard to tell if there is an “objectively stronger” variance between UK Pound and Indonesia Rupiah or bitcoin prices and the US dollar because the “scale” at which we measure and compute the covariance on is different.
+
+One solution is to “normalize” the covariance: we divide the covariance by something that encapsulate the scale in both the covariates, leading us up to a value that is bounded to the range of -1 and +1. This is the **correlation**. 
+
+## Correlation
+
+Whatever units our original variables were in, this transformation will get us a measurement that allow us to compare whether two variables exhibit a correlation stronger than another:
+
+$$Corr(X,Y) = \frac{Cov(X,Y)}{\sqrt{Var(X)*Var(Y)}}$$
+
+```{r}
+cov(years_at_company, monthly_income) / sqrt(var(years_at_company)*var(monthly_income))
+```
+
+
+And to find the correlation instead of the covariance, we would just use cor() instead. Correlation, unlike covariance, is not sensitive to the units in which our variables X and Y are measured and hence more useful for determining how strong the relationship is between variables:
+
+```{r}
+cor(years_at_company, monthly_income)
+```
+
+Some facts about correlation:
+
+- $Cor(X,Y) == Cor(Y,X)$
+- $-1 <= Cor(X,Y) <= 1$
+- Cor(X,Y) is 1 or -1 only when the X and Y observations fall perfectly on a positive or negatively sloped line
+- Cor(X,Y) = 0 implies no linear relationship
+
+*Discussion:*
+
+We can think of X and Y as the returns of two stocks (both stocks have a return, which is basically how much money they’re expected to make, and both have risks, which measure how much the return fluctuates; this is an example that [Mike Parzen](http://www.people.fas.harvard.edu/~mparzen/), from the Harvard Statistics Department, often uses in his courses to build intuition). In the Statistics ‘world’, it’s pretty much the norm to think of return as the average, or expectation, of a stock, and risk as the variance. So, say that you were building a portfolio (a compilation of multiple stocks) and wanted to find the risk and return of the entire portfolio.
+
+We could break this down into the ‘individual risks’ of the stocks - the separate Variances Var(A), Var(B), Var(C), etc - and the ‘interactive’ risks of them together - the Covariance term. The individual risk is straightforward enough (just the marginal variance of each stock), but think more about the interactive risks. *If two stocks tend to move together, then they are certainly riskier*. Finally, given the value of covariance and the correlation between the two stocks, we are more likely to choose 2 stocks that do not have a correlation (0) which means reducing the risk 2 stocks decrease simultaneously.

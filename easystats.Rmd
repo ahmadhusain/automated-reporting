@@ -1,0 +1,292 @@
+---
+title: "Reporting statistical models using easystats"
+author: "Team Algoritma"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    df_print: paged
+    highlight: breezedark
+    theme: united
+    number_section: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+```{r}
+library(easystats)
+library(tidyverse)
+library(rsample)
+library(caret)
+```
+
+# Machine Learning Fundamental
+
+## Motivation and Definition
+
+Machine learning on a very basic level, refers to a subfield of computer science that “gives computer the ability to learn without being explicitly programmed”, this realization and quote was credited to Arthur Samuel, who coined the term “machine learning” and created the world’s first self-learning program called the Samuel Checkers-playing Program in 1952. When Samuel was about to demonstrate the program, the founder and president of IBM remarked that the demonstration would raise the price of IBM stock by 15 points. It did. In 1961 Samuel challenged the Connecticut state checker champion (4th ranked nationwide) and his program won.
+
+With the advances in machine learning, society as a collective has pushed new boundaries around making machines “smarter”, or less-sensationally, making machines more able to perform tasks without human intervention. The whole notion of making machines perform these tasks that, for a long time in history were done by human brains, is what most people meant when they say “Artificial intelligence”. Compared to machine learning, AI describes a broad concept (“ideal”). Machine learning on the other hand, offers a particular approach to arriving at that “ideal”.
+
+So is machine learning a subset of AI? Short answer: yes. Not all methods of arriving at AI is machine learning - in fact throughout history AI often really means a bunch of if-then statements cleverly put together, or a robust statistical model that spits out a numeric prediction based on a combination of regression and rule-based nodes. Even Bayesian statistics can offer a path to AI, but none of these examples above count as machine learning in its strictest definition.
+
+## Understanding Supervised and Unsupervised
+
+An important categorization in machine learning literature is to identify algorithms by the “signal” we made available to a model.
+
+Supervised Machine Learning currently makes up most of the ML that is being used by systems across the world. The input variable (x) is used to connect with the output variable (y) through the use of an algorithm. All of the input, the output, the algorithm, and the scenario are being provided by humans.
+
+> Supervised learning: We feed our model training examples (input) and tag each of these example with a corresponding target, and is so doing, allow our model to produce a function that maps our input to its target.
+
+Supervised learning algorithms are used to solve for classification and regression problems. Good examples for the financial industry are credit risk scoring (regression or classification), loan default prediction (classification), and customer lifetime value (regression).
+
+> Unsupervised learning: If we feed our model training examples (input) without any labels, it is unsupervised learning.
+
+Good examples of unsupervised learning problems in the finance / banking sector include anomaly detection (there is no target variables in anomaly detection, there is not even necessarily any right or wrong answer as to when an observation is an anomaly and how many anomaly exist in our data) and auto segmentation (again, no right or wrong answers as to how many clusters of customer segments is the right amount).
+
+Which of the following do you think is a supervised learning problem?
+
+* Training an email spam filter
+* Find possible patterns from a group of 5000 financial transactions
+* Discover how many market segments can be drawn from a CRM (customer relationship system)
+* Categorizing transactions into high / medium / low risk - Classifying blood cell as benign * or malign
+
+# Employee Retention Analysis
+
+The objective is to understand what factors contributed most to employee attrition and to create a model that can predict if a certain employee will leave the company or not. The goal also includes helping in formulating different retention strategies on targeted employees. Overall, the implementation of this model will allow management to create better decision-making actions.
+
+Let’s import our data and inspect our variable;
+
+```{r}
+employee <- read.csv("data_input/HR-Employee-Attrition.csv")
+```
+
+```{r}
+glimpse(employee)
+```
+
+
+The data we’ve prepared is originally made available in kaggle by lnvardanyan : [ibm-hr-analytics-attrition-dataset](https://www.kaggle.com/pavansubhasht/ibm-hr-analytics-attrition-dataset). The following are the description of some features:
+
+* EnvironmentSatisfaction: 1 Low, 2 Medium, 3 High, 4 Very High
+* JobInvolvement: 1 Low, 2 Medium, 3 High, 4 Very High
+* JobSatisfaction: 1 Low, 2 Medium, 3 High, 4 Very High
+* PerformanceRating: 1 Low, 2 Good, 3 Excellent, 4 Outstanding
+* RelationshipSatisfaction: 1 Low, 2 Medium, 3 High, 4 Very High
+* WorkLifeBalance: 1 Bad, 2 Good, 3 Better, 4 Best.
+
+## Data Pre-paration
+
+### Cross Validation and Out-of-Sample Error
+
+Before we develop our classification model, I'll introduce you to the idea of estimating the accuracy of our model. Simply put, we are going to:
+
+- Split our dataset into train and test sets  
+- Build our machine learning model using data **only** from our train set  
+- Obtain an unbiased measurmenet of the model's accuracy by predicting on test set  
+
+A related idea is known as **cross-validation**, in which we:  
+
+- Split our dataset into train, cross-validation, and test sets.  
+- Develop the initial model using our train set.
+- Evaluate model on cross-validation set(s), returning to the previous step if necessary (say, pick different predictor variables, use a different parameter, or to tune other aspects of the model specification).
+- Pick a final model based on an evaluaion criteria (Adj.R-squared, accuracy, etc).
+- Obtain an unbiased measurmenet of the model's accuracy by predicting on test set. 
+
+We can repeat step(2) and step(3) as much as is necessary, testing out different algorithms or model specification, or combinations of predictor variables and pick a final model on which we will obtain our estimated accuracy by testing it on the test set. An important rule on this is that the **test set must not be used in any of the steps before the (5)**, such that the accuracy we obtain is an unbiased measurement of the out-of-sample accuracy of the model. 
+
+The idea of obtaining an unbiased estimate of our model's out-of-sample performance is an important one as it is often the case that the in-sample error (the error you obtain from running your algorithm on the dataset it was trained on) is optimistic and tuned / adapted in a particular way to minimize the error in the training sample. Therefore - the in-sample error is not a good representation or indication of how our model will perform when it is applied on unseen data. 
+
+Another way to think about is that our training data has two components to it: signal and noise. The goal of machine learning is to identify the signal but be robust enough to avoid modeling the "noise" component of the data. When we build a model, we want to know that our model is not overly adapted to the datast to the point that it captures both the signal and noise, a phenomenon known as "overfitting". When our model is guilty of overfitting, the in-sample accuracy will be very high (in some cases ~100%) but fail to perform on unseen data. The idea is to strike the right balance between accuracy (don't underfit) and robustness to noise (don't overfit). 
+
+```{r}
+set.seed(47)
+splitted <- initial_split(data = employee, prop = 0.8, strata = "Attrition")
+train <- training(splitted)
+test <- testing(splitted)
+```
+
+
+### Subsampling for Class Imbalance
+
+```{r}
+prop.table(table(train$Attrition))
+```
+
+In classification problems, a disparity in the frequencies of the observed classes can have a significant negative impact on model fitting. One technique for resolving such a class imbalance is to subsample the training data in a manner that mitigates the issues. Examples of sampling methods for this purpose are:
+
+- *down-sampling*: randomly subset all the classes in the training set so that their class frequencies match the least prevalent class. For example, suppose that 80% of the training set samples are the first class and the remaining 20% are in the second class. Down-sampling would randomly sample the first class to be the same size as the second class. caret contains a function (`downSample`) to do this.
+
+- *up-sampling*: randomly sample (with replacement) the minority class to be the same size as the majority class. caret contains a function (`upSample`) to do this.
+
+> Subsampling is intended to be performed on the _**training**_ dataset alone. 
+
+```{r}
+set.seed(47)
+train <- upSample(x = select(train, -Attrition),
+                  y = train$Attrition, 
+                  yname = "Attrition")
+```
+
+```{r}
+prop.table(table(train$Attrition))
+```
+
+## Modeling Logistic Regression
+
+```{r}
+model_logit <- glm(formula = Attrition ~., 
+                   data = train, 
+                   family = "binomial")
+```
+
+```{r}
+tidy(model_logit)
+```
+
+## Step-wise Regression for feature selection
+
+Recall in above section Linear Regression, there are two type of stepwise regression: `forward selection` and `bacward elimination`. In logistic regression, we can use `stepwise` too for the non-business wise feature selection.
+
+```{r}
+stepmodel_logit <- step(model_logit, direction = "backward", trace = FALSE)
+```
+
+```{r}
+tidy(stepmodel_logit)
+```
+
+## Model Interpretation
+
+Using the model we have built with stepwise regression, we can create a likelihood table and analyze the contribution of each variable in determining probability. For example, let’s take a coefficient value from a numerical variable:
+
+Based on model summary we get information the coefficient (see estimate column) for Age is -0.0187. This negtive coefficient can be interpreted as:
+
+> The older the employee, the smaller chance to leave. 
+
+```{r}
+tidy(stepmodel_logit) %>% 
+  mutate(odds_ratio = round(exp(estimate),2),
+         p.value = round(p.value, 2)) %>% 
+  select(term, odds_ratio, p.value) %>% 
+  arrange(-odds_ratio)
+```
+
+Here are a quick summary of the table above:
+
+1. Business Travel Frequently and Business Travel Rarely have a positive coefficient, so if the Employee is traveling for business more likely to leave the company than the employee who non-traveling.
+2. Overtime have a positive coefficient and the odds ratio yes to no is 5,45, which is to say that the odds for employee who working overtime will leave the company are about 445% more than that of their who not working overtime.
+3. The variables are linked (directly or indirectly) to work-life-balance (Job Satisfaction, Environment Satisfaction, Job Involvement, ) have a negative coefficient, and of course the odds ratio will be less than one. We can say that the more satisfied and the higher job involvement the employee, the less likely that employees will leave the company.
+
+## Predicting
+
+To test whether our model has a good performance, it will be seen whether our model can be good enough in classifying the *Attrition* status in the unseen data.
+
+```{r}
+prob_logit <- predict(stepmodel_logit, newdata = test, type = "response")
+pred_logit <- ifelse(prob_logit > 0.5, "Yes", "No")
+```
+
+```{r}
+pred_logit <- as.factor(pred_logit)
+```
+
+```{r}
+table("prediction" = pred_logit, "actual" = test$Attrition)
+```
+
+This table above is also known as the confusion matrix.
+
+Observe from the confusion matrix that:
+
+* Out of the 73 actual employee leave we classified 52 of them correctly
+* Out of the 246 employee that stay we classified 184 of them correctly
+* Out of the 319 cases of attrition in our test set, we classified 236 of them correctly
+
+# Uses of easystats
+
+`easystats` is a development packages in R to provide a unifying and consistent framework to tame and harness the scary of R statistical models. We can automate convert an object of R from simple statistical model into textual report that ease our our daily working in making interpretation from the data.
+
+## Correlation test
+
+```{r}
+get_narative_cor <- function(x, y, xname, yname){
+  
+  temp <- cor.test(x, y)
+  paste0(
+    "The Pearson's product-moment correlation between ",
+    xname, 
+    "and ", 
+    yname, 
+    " is ", 
+    ifelse(temp$estimate > 0, "positive ", "negative "), 
+    ifelse(temp$p.value < 0.05, "significant as a statistics", "but not significant enough"), 
+    " with a value ", 
+    round(temp$estimate, digits = 2)
+  )
+  
+}
+```
+
+```{r}
+narativecor <- get_narative_cor(x = employee$YearsAtCompany, employee$MonthlyIncome, xname = "Years at Company", yname = "Monthly Income")
+```
+
+`r narativecor`
+
+## Print all parameter from Model
+
+```{r}
+get_narative_model <- function(model, target){
+
+
+tidy_estimate <- tidy(model) %>% 
+  mutate(term = gsub(term, pattern = "([[:upper:]])", replacement = ' \\1') %>% 
+           str_remove(pattern = "[[:punct:]]") %>% 
+           str_squish())
+
+text <- paste0(
+  "We fitted a logistic regression to predict ", 
+  target, 
+  ".",
+  "",
+  " The model Intercepet is at ", 
+  round(tidy_estimate$estimate[1], digits = 2),
+  ". Within this model: <br>"
+)
+
+for (i in 2:nrow(tidy_estimate)) {
+
+  text[i] <- paste0(
+    i-1,
+    ". The effect of ", 
+    tidy_estimate$term[i], 
+    " is ", 
+    ifelse(tidy_estimate$estimate[i] > 0, "positive", "negative"), 
+    " with value: ", 
+    round(tidy_estimate$estimate[i], digits = 2), 
+    "<br>"
+  ) 
+}
+ 
+return(text)
+ 
+}
+
+narativemodel <- get_narative_model(model = stepmodel_logit, target = "Attrition Status")
+```
+
+`r narativemodel %>% str_remove_all(pattern = ",")`
+
+
+
+
+
+

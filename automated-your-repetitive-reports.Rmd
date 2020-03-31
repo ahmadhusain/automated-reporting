@@ -1,0 +1,52 @@
+---
+title: "Automate your Repetitive Report"
+author: "Team Algoritma"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    df_print: paged
+    highlight: breezedark
+    theme: united
+    number_section: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+Many analytics teams get bored. They can not handle interesting tasks because the teams is too busy to produce the daily updates and report they need for business. For example, some teams still use reporting tools likes Microsoft Excel. If any repetitive reports which still using this tool, it might be time-consuming to do the tasks that should not be too difficult. Other analytical tools that are widely applied for data visualization or making reporting purposes built on databases can cause expensive design and maintenance processes.
+
+In many cases, there is an opportunity to reduce the burden substantially. By using open source tools to automatically process, visualize, and serve data to client with almost no humat effort at all and of course no charge. So in
+
+# Reproducible function in R
+
+```{r}
+
+```
+
+# Create awesome table using KableExtra
+
+```{r}
+
+```
+
+
+# Intro to Shiny
+
+Shiny is an open package from RStudio, which provides a web application framework to create interactive web applications (visualization) called “Shiny apps”. The ease of working with Shiny has what popularized it among R users. These web applications seamlessly display R objects (like plots, tables etc.) and can also be made live to allow access to anyone.
+
+Shiny provides automatic reactive binding between inputs and outputs. It also provides extensive pre-built widgets which make it possible to build elegant and powerful applications with minimal effort.
+
+Structure of a basic shiny apps:
+
+* global.R: For setting-up the apps’ environment, e.g., libraries, import and initial cleaning dataset
+* ui.R: User Interface (UI) for displaying input and output
+* server.R: For processing user’s input and render it into output
+
+One of many useful libraries that we can use is shinydashboard. We can use shinydashboard to create a dashboard apps for our users.

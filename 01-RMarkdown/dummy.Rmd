@@ -1,13 +1,28 @@
 ---
-title: "AUTOMATE: Business Reporting with R"
+title: "Automate: Business Reporting with R"
 author: "Team Algoritma"
 date: "31/3/2020"
-output: html_document
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float:
+      collapsed: true
+      smooth_scroll: true
+    number_sections: true
+    theme: united
+    highlight: breezedark
+    fig_width: 6
+    fig_height: 4
+    df_print: paged
+    code_folding: hide
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+# Lessons
 
 ## R Markdown
 
@@ -19,7 +34,7 @@ When you click the **Knit** button a document will be generated that includes bo
 summary(cars)
 ```
 
-## Including Plots
+### Including Plots
 
 You can also embed plots, for example:
 
@@ -28,3 +43,37 @@ plot(pressure)
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+# Traditional Tab {.tabset}
+
+## Tab 1
+
+tab content 1
+
+## Tab 2
+
+tab content 2
+
+# Pill Tab {.tabset .tabset-fade .tabset-pills}
+
+## Tab 1
+
+tab content 1
+
+## Tab 2
+
+tab content 2
+
+# Data Display
+
+Below is **Motor Trend Car Road Test** data. The data was extracted from the 1974 Motor Trend US magazine, and comprises fuel consumption and 10 aspects of automobile design and performance for 32 automobiles (1973–74 models).
+
+```{r}
+mtcars
+```
+
+
+
+
+
+

@@ -10,8 +10,8 @@ output:
     toc_float:
       collapsed: false
     df_print: paged
-    theme: flatly
-    highlight: tango
+    theme: united
+    highlight: breezedark
     css: assets/style.css
   pdf_document:
     latex_engine: xelatex
@@ -58,9 +58,9 @@ This is the very first course of _Automate: Business Reporting with R_. The prim
     + Report Template using YAML
     
 * **Generate Report from R Markdown**
+    + HTML Document
     + PDF Document
     + Word Document
-    + HTML Document
     + Interactive PowerPoint Presentation
 
 * **Parameterized Reports**
@@ -186,14 +186,10 @@ knitr::include_graphics("assets/new3.png")
 
 Finally, we can also export the document into certain or multiple format by using _Knit_ button ![](assets/knitt-button.PNG) in RStudio on the upper part of the document.
 
-```{r, out.width = "70%", echo = FALSE, fig.align = "center"}
-knitr::include_graphics("assets/new4.png")
-```
-
-If we haven't save our document, R will direct us to save our file. In the example below, the document is saved inside the same _working directory_ (folder) of our workshop material. The best practice is to store our R Markdown document and the data we use in one working directory. This is to prevent any connection error while importing data and such. After knitting the document, R will produce the document output based on the format we choose earlier.
+If we haven't save our document, R will direct us to save our file. In the example below, the document is saved with the name `dummy.Rmd` inside the same _working directory_ (folder) of our workshop material. The best practice is to store our R Markdown document and the data we use in one working directory. This is to prevent any connection error while importing data and such. After knitting the document, R will produce the document output based on the format we choose earlier.
 
 ```{r, out.width = "100%", echo = FALSE, fig.align = "center"}
-knitr::include_graphics("assets/new6.png")
+knitr::include_graphics("assets/new4.png")
 ```
 
 In the next section, we will explore various ways of writing R codes and naration in R Markdown, including simple text formatting that will produce elegantly formatted output.
@@ -214,11 +210,9 @@ When we knit our document, the code output will be displayed beneath the code ch
 print("Hello!")
 ```
 
-Alternatively you can also insert code directly into an R Markdown text or we call it as _inline code_  by enclosing the code with `` `r ` ``. For example, `r paste("did you notice that I write this using R codes?")` Because I did using the codes below.  
+Alternatively you can also insert code directly into an R Markdown text or we call it as _inline code_  by enclosing the code with `` `r ` ``. For example, `r paste("did you notice that I write this using R codes?")` Because I did using the following syntax.  
 
-````markdown
-For example, `r '\x60r paste("did you notice that I write this using R codes?")\x60'`
-````
+`` For example, `r '\x60r paste("did you notice that I write this using R codes?")\x60'` ``
 
 This facilitates user to include data analysis result into his narration in the business report. R Markdown will display the result of an inline code but not the code, making it indistinguishable from the sorrounding text. **This allows flexibility in making an automated business report because we can generate narration adjusting to its changing input and its analysis**.
 
@@ -226,35 +220,276 @@ This facilitates user to include data analysis result into his narration in the 
 
 Writing _narration_ in R Markdown is mostly similar to writing narration in any word processing tools. The difference is how R Markdown use [Pandoc's Markdown](https://pandoc.org/MANUAL.html#pandocs-markdown), a set of markup annotations to format the text for our narration.
 
-There are several commonly used annotation in R Markdown. For convinience, we have made a list of it and the preview below. You can access the document `text_formatting.Rmd` in the same folder of couse material. These annotation were taken from [_R Markdown Cheatsheet_](https://rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf) which you can download freely to explore more about various features in R Markdown. 
+There are several commonly used annotation in R Markdown. For convinience, we have made a list of it and the preview below. You can access the document `text_formatting.Rmd` in the same folder of couse material. These annotation were taken from [_R Markdown Cheatsheet_](https://github.com/rstudio/cheatsheets/raw/master/rmarkdown-2.0.pdf) which you can download freely to explore more about various features in R Markdown. 
+
+```{r, out.width = "100%", echo = FALSE, fig.align = "center"}
+knitr::include_graphics("assets/tformat.png")
+```
+
+In several cases, you might also want to write a code explanation or _narration inside a chunk_. When you type a narration inside a chunk it will produce an error because R recognize your naration as a function/command that needs to be executed. To write a narration inside a chunk you will need to mark it as a _comment_ by using `#` before the text. Below is some example
+
+```{r}
+# this is a nice comment!
+# and below is some simple math operation to run:
+(4+6)/3
+```
 
 ## Chunk & Global Options
 
-* **Introduction to R Markdown**
-    + R and R Markdown  
-    + Using R Markdown
-    + Writing Codes & Naration
-      - codes in chunk, codes in naration
-      - naration in chunk, naration in naration
-    + Chunk & Global Options
-    + Report Template using YAML
+### Chunk Options
+
+If you noticed earlier, most of the code we made inside the chunk will be displayed and so is the output. This is because we follow a set of default chunk options when generating an R Markdown output. _Chunk options_ is a set of customizable argument to manage how chunk should be rendered when generating an output. By default, it use an argument called `echo = TRUE` which means to **display the code** in the generated output.
+
+```{r, out.width = "100%", echo = FALSE, fig.align = "center"}
+knitr::include_graphics("assets/chunk.png")
+```
+
+Above is an example of chunks taken from `dummy.Rmd` that we made earlier. The document contains 3 chunks which two of them have chunk options that were set. The _chunk options_ can be set inside the bracket `{}` of a chunk header, following after a _chunk name/id_ (chunk name is optional). Below is an example
+
+`` ```{r pressure, echo = FALSE}``` ``
+
+We can see a chunk named **pressure** followed by comma `,` and chunk options `echo` which set as `FALSE`. Based on the option that were set, R will execute the code, display the output but will not display or *echoing* the code in the R Markdown output.
+
+```{r, out.width = "100%", echo = FALSE, fig.align = "center"}
+knitr::include_graphics("assets/echof.png")
+```
+
+There are several chunk options users commonly use:
+
+* **include** = default to TRUE, if FALSE chunk will not be included in the final document but code will still be excecuted.
+* **eval** = default to TRUE, if FALSE code will not be executed.
+* **echo** = default to TRUE, if FALSE code will not be displayed in the final document.
+* **message** = default to TRUE, if FALSE the message generated from the code will not be displayed.
+* **warning** = default to TRUE, if FALSE the warning generated from the code will not be displayed.
+* **fig.height, fig.width** = the figure width & height used for creating a figure/plot output. 
+
+For a complete list of chunk options, you can see the [_R Markdown Reference Guide_](https://rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf).
+
+### Global Options 
+
+Sometimes, you want to set specific chunk options to all the chunk in a document. We can set these using the _global chunk options_. We can type `knitr::opts_chunk$set` in a code chunk and R will treat each options we pass into it as a global chunk options.
+
+The chunk named **setup** from `dummy.Rmd` is an example where we set the `echo = TRUE` for all chunks. If we want to hide all codes within our document, than we can just change the echo options into `echo = FALSE`. Below is an example of how we hide the code which make a summary of cars data, which previously displayed in the generated output. 
+
+```{r, out.width = "100%", echo = FALSE, fig.align = "center"}
+knitr::include_graphics("assets/globalopt.png")
+```
+
+Note that **global chunk options can be overwitten** by options we set in the individual chunk headers. This is why the generated output did not display code chunk to make the pressure plot even though it stated `echo = TRUE` in the global chunk options. Notice that we have set `echo = FALSE` in the individual chunk.  
 
 ## Report Template using YAML
 
+The last part of R Markdown introduction is to customize our report template using YAML. _YAML_ stated in the first part of any R Markdown document.  A default YAML will contain the following:
 
+```
+title: "title of document"
+author: "author of document"
+date: "date of document"
+output: html_document
+```
 
+The default output for an R Markdown is _HTML document_. Which is why HTML document has the richest features among other output formats. We can specify **other outputs** inside YAML output options (which we will cover in the next section), but prior understanding about how YAML in HTML document work will help us a lot in understanding the other outputs. 
 
+Before exploring many features of HTML document, let's add more content to our `dummy.Rmd`. Use the knowledge you have learned from the previous section to do the following tasks:
 
+1. Change the title of document to "Automate: Business Reporting with R".
+2. Change the author of document to your name.
+3. Change the date of document into today's date.
+4. Add a level 1 Header named "Lessons" before the header "R Markdown".
+5. Change "Including Plots" into a level 3 header (thus will be located inside the "R Markdown" section).
 
+### Table of Content
 
+To add various features on our HTML output, we can position `html_document` in a new line with a tab (ENTER + TAB). Indentation is important in YAML and therefore should be checked thoroughly.
 
+The first feature is _table of content_ which you can add using `toc` options below (ENTER + Double TAB). You can specify the depth of headers that applies to table of content using  `toc_depth` options (defaults to 3). Using the YAML below, the generated output will only display table of content for level 1-3 headers.
 
+```
+title: "Automate: Business Reporting with R"
+author: "Team Algoritma"
+date: "31/3/2020"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+```
 
+```{r, out.width = "100%", echo = FALSE, fig.align = "center"}
+knitr::include_graphics("assets/toc.png")
+```
 
+You can also position table of content on the left side of the document and make it float by using `toc_float`. _Floating table of content_ will always be visible even when the document is scrolled. You can set two additional options into the `toc_float`:
 
+* **collapsed**: default to true, whether toc will display only the top-level header (level 1-2).
+* **smooth scroll**: default to true, whether page scrolls are animated when TOC items are navigated to via mouse clicks.
 
+```
+title: "Automate: Business Reporting with R"
+author: "Team Algoritma"
+date: "31/3/2020"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float:
+      collapsed: true
+      smooth_scroll: true
+```
 
+```{r, out.width = "100%", echo = FALSE, fig.align = "center"}
+knitr::include_graphics("assets/toc2.png")
+```
 
+### Section Numbering
+
+You can also add _section numbering_ using `number_sections` options.
+
+```
+title: "Automate: Business Reporting with R"
+author: "Team Algoritma"
+date: "31/3/2020"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float:
+      collapsed: true
+      smooth_scroll: true
+    number_sections: true
+```
+
+### Tabbed Sections
+
+If you notice, this course material has tabbed section at **Preface**. The _tabbed section_ can be made using `{.tabset}` after the headers. This will cause all sub-headers of the header with the `{.tabset}` attribute to appear within tabs rather than as standalone sections. 
+
+We can also control appearance of the tabset using:
+
+* **.tabset-fade**: causes the tabs to fade in and out when switching between tabs. 
+* **.tabset-pills**: causes the visual appearance of the tabs to be “pill” rather than traditional tab
+
+Below is an example:
+
+```{r, out.width = "100%", echo = FALSE, fig.align = "center"}
+knitr::include_graphics("assets/tabsec.png")
+```
+
+### Appearence and Style
+
+The most enhanced feature in R Markdown is probably the ability to directly specifies _themes_ for the document. You can choose between **default, cerulean, journal, flatly, darkly, readable, spacelab, united, cosmo, lumen, paper, sandstone, simplex,** and **yeti**. You can preview each one in [here](https://www.datadreaming.org/post/r-markdown-theme-gallery/) included some other themes using additional packages such as _prettydoc_ and _rmdformats_. Alternatively you can also pass `null` for no theme or if you want to use **css parameter** of your own.
+
+We can also specify _highlight_ for syntax highlighting style. Supported styles include **default, tango, pygments, kate, monochrome, espresso, zenburn, haddock, breezedark,** and **textmate**. Pass `null` to prevent any syntax highlighting.
+
+In this example, we will use theme **united** and highlighting style **breezedark**.
+
+```
+title: "Automate: Business Reporting with R"
+author: "Team Algoritma"
+date: "31/3/2020"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float:
+      collapsed: true
+      smooth_scroll: true
+    number_sections: true
+    theme: united
+    highlight: breezedark
+```
+
+```{r, out.width = "100%", echo = FALSE, fig.align = "center"}
+knitr::include_graphics("assets/theme.png")
+```
+
+### Figure Options
+
+We can also set parameter for all figures in our R Markdown using _figure options_:
+
+* **fig_width** and **fig_height**: to control figure width and height (by default is 7x5).
+* **fig_caption**: whether figures will be rendered with captions.
+
+```
+title: "Automate: Business Reporting with R"
+author: "Team Algoritma"
+date: "31/3/2020"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float:
+      collapsed: true
+      smooth_scroll: true
+    number_sections: true
+    theme: united
+    highlight: breezedark
+    fig_width: 6
+    fig_height: 4
+```
+
+```{r, out.width = "100%", echo = FALSE, fig.align = "center"}
+knitr::include_graphics("assets/fig.png")
+```
+
+We can see that the plot is slightly smaller than the one generated earlier.
+
+### Data Display
+
+Most of the time we will need to print our data in the form of table in our business report. We can enhance the display of our data via `df_print` option. For example, we can display it in the form of _paged HTML tables_ by setting the `df_print = paged`. This will allow us to navigate through paged rows and column. 
+
+```
+title: "Automate: Business Reporting with R"
+author: "Team Algoritma"
+date: "31/3/2020"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float:
+      collapsed: true
+      smooth_scroll: true
+    number_sections: true
+    theme: united
+    highlight: breezedark
+    fig_width: 6
+    fig_height: 4
+    df_print: paged
+```
+
+For example, below is **Motor Trend Car Road Test** data. The data was extracted from the 1974 Motor Trend US magazine, and comprises fuel consumption and 10 aspects of automobile design and performance for 32 automobiles (1973–74 models).
+
+```{r}
+mtcars
+```
+
+### Code Folding
+
+Previously we have discussed how to display and not display code chunk using _chunk options_ in global options/individual chunk. In some cases, we might want the code to be available to show but not visible by default. The _code_folding_ options enables us to include R code in an R Markdown output with choices to **hide** or **show** the R code by default. With this users can choose whether to show R code chunks individually or document wide. For example:
+
+```
+title: "Automate: Business Reporting with R"
+author: "Team Algoritma"
+date: "31/3/2020"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float:
+      collapsed: true
+      smooth_scroll: true
+    number_sections: true
+    theme: united
+    highlight: breezedark
+    fig_width: 6
+    fig_height: 4
+    df_print: paged
+    code_folding: hide
+```
+
+```{r, out.width = "100%", echo = FALSE, fig.align = "center"}
+knitr::include_graphics("assets/codef.png")
+```
+
+There are many more YAML options that is available to explore. You can check the full YAML options in [_R Markdown Cheatsheet_](https://github.com/rstudio/cheatsheets/raw/master/rmarkdown-2.0.pdf) or [_R Markdown Reference Guide_](https://rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf) for a simplified version.
 
 
 

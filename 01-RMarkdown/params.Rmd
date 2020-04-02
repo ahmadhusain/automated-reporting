@@ -1,0 +1,22 @@
+---
+title: "Violent Crime Rates by US State"
+author: "Team Algoritma"
+output: 
+  html_document:
+    df_print: kable
+params:
+  head: 5
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+```
+
+Statistics of arrests per 100,000 residents for assault, murder, and rape in each of the 50 US states in 1973 were recorded on **USArrest Data**.
+
+Below is first `r params$head` observations of the Dataset.
+
+```{r echo=FALSE}
+USArrests %>% 
+  head(params$head)
+```

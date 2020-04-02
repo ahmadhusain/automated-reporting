@@ -48,7 +48,7 @@ This 2-day online workshop is a beginner-friendly introduction to automate busin
 
 ## Training Objectives
 
-This is the very first course of _Automate: Business Reporting with R_. The primary objective of this course is to provide a participant a comprehensive introduction about tools and software for producing a high-quality publication using R and R Markdown. This course will provide participants the basic knowledge for developing Automated Reporting with R. The syllabus covers: 
+This is the very first chapter of _Automate: Business Reporting with R_. The primary objective of this chapter is to provide a participant a comprehensive introduction about tools and software for producing a high-quality publication using R and R Markdown. This chapter will provide participants the basic knowledge for developing Automated Reporting with R. The syllabus covers: 
 
 * **Introduction to R Markdown**
     + R and R Markdown
@@ -65,8 +65,8 @@ This is the very first course of _Automate: Business Reporting with R_. The prim
 
 * **Parameterized Reports**
     + Declaring parameters
-    + Using parameter in code chunks
-    + Using parameter inline code
+    + Using Parameter in Code Chunks
+    + Using Parameter Inline Code
 
 ***
 
@@ -82,7 +82,7 @@ You will need to use `install.packages()` to install any packages that are not y
 install.packages("rmarkdown")
 ```
 
-Then you need to load the package into your workspace using the `library()` function.
+Then you need to load the package into your workspace using the `library()` function. Special for this chapter, the _rmarkdown_ packages do not need to be called using `library()`.
 
 ```{r eval=FALSE}
 
@@ -92,7 +92,7 @@ Then you need to load the package into your workspace using the `library()` func
 
 # Introduction to R Markdown
 
-## R and RMarkdown
+## R and R Markdown
 
 Business reporting involves a series of gathering data from various resources, performing data analysis, producing summary and visualization, and sometimes even provide a future outlook for a specific business practice within an organization. Numerous software was developed to provide such a rich data analytics process. Throughout the years, _R_ has developed into one of the most used tools for data analysis, supported by _RStudio_ as an Integrated Development Environment (IDE) which provide an easy-to-use user interface in working with R. There are reasons why R is widely used for data analysis:
 
@@ -116,21 +116,21 @@ Business reporting involves a series of gathering data from various resources, p
 
     RHadoop, ParallelR, Revolution R Enterprise and a handful of other toolkits adds powerful big data support, allowing data engineers to create custom parallel and distributed algorithms to handle parallel / map-reduce programming in R. This makes R a popular choice for big data analytics and high performance, enterprise-level analytics platform.
 
-In addition of using R we will be using packages named _R Markdown_. R Markdown is an R packages made for easy development of dynamic documents for R. R Markdown turn our analysis into high quality documents, reports, presentations and dashboards. R Markdown suppports the development of various report and publication using R and open opportunities for **automated reporting**. 
+In addition to using R we will be using packages named _R Markdown_. R Markdown is R packages made for easy development of dynamic documents for R. R Markdown turn our analysis into high-quality documents, reports, presentations, and dashboards. R Markdown supports the development of various reports and publications using R and open opportunities for **automated reporting**. 
 
 ```{r, echo = FALSE, fig.align = "center"}
 knitr::include_graphics("assets/hex-rmarkdown.png")
 ```
 
-R Markdown supports user with **easy analysis** in R because it enables user to weave together narrative text and code in the document. It supports multiple programming language including R, Python and SQL. After performing analysis, R Markdown supports **dozens of static and dynamic output** formats including PDF, Word document, HTML document, and Interactive PowerPoint Presentation. This is made entirely from one R Markdown document, allowing us to **simultaneously export our analysis into various outputs**.
+R Markdown supports users with **easy analysis** in R because it enables users to weave together narrative text and code in the document. It supports multiple programming languages including R, Python, and SQL. After performing analysis, R Markdown supports **dozens of static and dynamic output** formats including PDF, Word document, HTML document, and Interactive PowerPoint Presentation. This is made entirely from one R Markdown document, allowing us to **simultaneously export our analysis into various outputs**.
 
-To truly experience the excitement and convinience of using R, our next section will more intersting because we will directly use _R_ and _R Markdown_ to familiarize ourselves with them.
+To truly experience the excitement and convenience of using R, our next section will more interesting because we will directly use _R_ and _R Markdown_ to familiarize ourselves with them.
 
 ## Using R Markdown
 
-In this first section of the course, we will explain briefly about how to use R Markdwon, from creating an R Markdown document, its component, and how we can produce a report using R Markdown. 
+In this first section of R Markdown, we will explain briefly how to use R Markdown, from creating an R Markdown document, its component, and how we can produce a report using R Markdown. 
 
-Bofore using R Markdown you need to install the package _rmarkdown_ into your machine. To further learn about packages and installation you can see the **Library and Setup** section above. Make sure that you already have the latest version of [_R_](https://cran.r-project.org/) and [_RStudio_](https://rstudio.com/products/rstudio/download/) installed on your machine. If this is your first time using RStudio, you will see this in your RStudio window:
+Before using R Markdown you need to install the package _rmarkdown_ into your machine. To further learn about packages and installation you can see the **Library and Setup** section above. Make sure that you already have the latest version of [_R_](https://cran.r-project.org/) and [_RStudio_](https://rstudio.com/products/rstudio/download/) installed on your machine. If this is your first time using RStudio, you will see this in your RStudio window:
 
 ```{r, out.width = "100%", echo = FALSE, fig.align = "center"}
 knitr::include_graphics("assets/rstudio.png")
@@ -140,18 +140,18 @@ knitr::include_graphics("assets/rstudio.png")
 
 Above is the default view of RStudio. There are 4 panels each with its function:
 
-* **Editor**: is where we can input codes and naration on specific files which can be saved into our computer.
+* **Editor**: is where we can input codes and narration on specific files that can be saved into our computer.
 * **Console**: is where we can input codes and perform analysis without saving it into our computer.
-* **Environment**: is where R store our data temporarily when doing data analysis in R. This allow us to see and track our data while doing data analysis. There is also tab **history** and **connection**, though we will not use these in this workshop. 
-* **Files, packages, help, etc**: is where we can track our files in our computer, our packages, and search for documentation and description about specific function/command we use in our project. Additionally there are also **plots** and **viewer** to preview plots and files generated using R.
+* **Environment**: is where R stores our data temporarily when doing data analysis in R. This allows us to see and track our data while doing data analysis. There is also tab **history** and **connection**, though we will not use these in this workshop. 
+* **Files, packages, help, etc**: is where we can track our files in our computer, our packages, and search for documentation and description about specific function/command we use in our project. Additionally, there are also **plots** and **viewer** to preview plots and files generated using R.
 
-To easily analyze data and produce business report using R we will be using R Markdown. We can create new _R Markdown document_ by clicking on the menu **File > New File > R Markdown**. Alternatively we can hover our mouse to a dropdown menu on the left corner of R Studio  ![](assets/new-button.PNG) and then choose "R Markdown". We will be directed to a pop-up for creating new R Markdown document.
+To easily analyze data and produce business reports using R we will be using R Markdown. We can create new _R Markdown document_ by clicking on the menu **File > New File > R Markdown**. Alternatively, we can hover our mouse to a dropdown menu on the left corner of RStudio ![](assets/new-button.PNG) and then choose "R Markdown". We will be directed to a pop-up for creating a new R Markdown document.
 
 ```{r, out.width = "80%", echo = FALSE, fig.align = "center"}
 knitr::include_graphics("assets/new.png")
 ```
 
-We can choose the **title** and **author** for our project and there are several output options we can choose. For introduction, let's use the default HTML output. An R Markdown document, a plain text file with the extension `.Rmd`, will be created on our Editor panel. 
+We can choose the **title** and **author** for our project and there are several output options we can choose. For the introduction, let's use the default HTML output. An R Markdown document, a plain text file with the extension `.Rmd`, will be created on our Editor panel. 
 
 <br>
 
@@ -263,7 +263,7 @@ There are several chunk options users commonly use:
 * **warning** = default to TRUE, if FALSE the warning generated from the code will not be displayed.
 * **fig.height, fig.width** = the figure width & height used for creating a figure/plot output. 
 
-For a complete list of chunk options, you can see the [_R Markdown Reference Guide_](https://rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf).
+For a complete list of chunk options, you can see the _R Markdown Cheatsheet_ or for more compressed version in [_R Markdown Reference Guide_](https://rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf).
 
 ### Global Options 
 
@@ -360,7 +360,7 @@ output:
 
 ### Tabbed Sections
 
-If you notice, this course material has tabbed section at **Preface**. The _tabbed section_ can be made using `{.tabset}` after the headers. This will cause all sub-headers of the header with the `{.tabset}` attribute to appear within tabs rather than as standalone sections. 
+If you notice, this coursebook has tabbed section at **Preface**. The _tabbed section_ can be made using `{.tabset}` after the headers. This will cause all sub-headers of the header with the `{.tabset}` attribute to appear within tabs rather than as standalone sections. 
 
 We can also control appearance of the tabset using:
 
@@ -434,7 +434,7 @@ We can see that the plot is slightly smaller than the one generated earlier.
 
 ### Data Display
 
-Most of the time we will need to print our data in the form of table in our business report. We can enhance the display of our data via `df_print` option. For example, we can display it in the form of _paged HTML tables_ by setting the `df_print = paged`. This will allow us to navigate through paged rows and column. 
+Most of the time we will need to print our data in the form of table in our business report. We can enhance the display of our data via `df_print` option. For example, we can display it in the form of _paged HTML tables_ by setting the `df_print: paged`. This will allow us to navigate through paged rows and column. 
 
 ```
 title: "Automate: Business Reporting with R"
@@ -460,6 +460,8 @@ For example, below is **Motor Trend Car Road Test** data. The data was extracted
 ```{r}
 mtcars
 ```
+
+The `df_print: paged` options can be very convinient for a HTML output, but other formats such as `kabble` might be more suitable for PDF and Word. We will discuss further about how to make awesome table using _kableExtra_ in the following chapter.
 
 ### Code Folding
 
@@ -489,20 +491,272 @@ output:
 knitr::include_graphics("assets/codef.png")
 ```
 
-There are many more YAML options that is available to explore. You can check the full YAML options in [_R Markdown Cheatsheet_](https://github.com/rstudio/cheatsheets/raw/master/rmarkdown-2.0.pdf) or [_R Markdown Reference Guide_](https://rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf) for a simplified version.
+We have briefly explored YAML options that are commonly used for R Markdown output (default output HTML document is used for demonstration). Even so, there are still many more YAML options that are available to explore listed and described in [_R Markdown: The Definitive Guide_](https://bookdown.org/yihui/rmarkdown/html-document.html), a book by Yihui Xie, J. J. Allaire, and Garrett Grolemund which created using R Markdown itself. Meanwhile, for a daily lookup, you check the full YAML options in [_R Markdown Cheatsheet_](https://github.com/rstudio/cheatsheets/raw/master/rmarkdown-2.0.pdf) or [_R Markdown Reference Guide_](https://rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf) for a simplified version.
 
+# Generate Report from R Markdown
 
+Often times users need to create business reports in various formats. For example, A person needs his report to be shared with His teammates in the format of _Word Document_, some others asked for more interactivity and convenience for accessing via browsers so they asked for _HTML Document_. He also needs one to be printed using _PDF_ and the one to be presented in front of the board/team members in _Interactive PowerPoint Presentation_. The most unexpected request then came from His boss who wants His report to be published in the form of **Interactive Dashboard**, so that He can easily access and so do His colleagues and the other department. That's a lot of things to do and create! A person might be too focused on polishing just one business report for each requested format than in developing an in-depth analysis of the case/project that He needs to analyze.
 
+This is the part where R Markdown can help! R Markdown offers various output by only using one file including _HTML Document_, _PDF_, _Word Document_, and _Interactive PowerPoint Presentation_ which mostly used for business report (and will be discussed in this section). In addition to those, R Markdown also supports formats including interactive dashboard, websites, books and more other which you can explore [here](https://rmarkdown.rstudio.com/lesson-9.html).
 
+We can specify the desired output by choosing the format in the **pop-up** that appeared when we first create a new R Markdown file. If we click the _Presentation_ tab we will see several formats for presentation. If we click the _Shiny_ tab we can choose between developing interactive document or presentation. We can also use a built-in or customized template for our document by choosing _From Template_. 
 
+When we choose an output, R Markdown will automatically specify that output in the _output options_ of our _YAML_. For example, the dummy.Rmd we made earlier is taking the `html_document` output. Below is a glimpse of the YAML from the `dummy.Rmd` we made earlier.
 
+```
+title: "Automate: Business Reporting with R"
+author: "Team Algoritma"
+date: "31/3/2020"
+output: 
+  html_document:
+    toc: true
+```
 
+When we **Knit** our document, R will automatically create the first specified output stated in our YAML options (in this case a HTML Document). We can also directly create another format by clicking the **dropdown menu of the Knit button**, and choose the available output. For example if we choose PDF output than this PDF will be generated:
 
+```{r, out.width = "100%", echo = FALSE, fig.align = "center"}
+knitr::include_graphics("assets/pdf-out.png")
+```
 
+When we look back to our YAML options, R automatically added `output: pdf_document` as a result, complete with the default feature options.
 
+```{r, out.width = "100%", echo = FALSE, fig.align = "center"}
+knitr::include_graphics("assets/add-yaml.png")
+```
 
+The YAML in R Markdown allows users to specify **more than one output format** for his R Markdown document. Moreover, users can also **simultaneously customize the appearance for all of their desired output** using only one document. This is quite an advantage because users do not have to spend an excessive amount of time customizing individually for each specific output in each respective software. Why not use such precious time with something that really matters.
 
+We have understood that there are various outputs that an R Markdown can create. Each output and its format can be set inside the YAML of an R Markdown. Further on, we will be discussing the four outputs that we commonly use for making a business report and how to create one using the R Markdown document we have made earlier.
 
+## HTML Document
 
+HTML Document is a default output of an R Markdown document. The `dummy.Rmd` we made earlier is an example of HTML Document output. Besides choosing HTML output in the "create new R Markdown" pop-up. We can also manually set the output in YAML.
 
-***
+```
+title: "Automate: Business Reporting with R"
+author: "Team Algoritma"
+date: "31/3/2020"
+output: html_document
+```
+
+The above YAML example will result in default HTML document output, without specific themes or features such as floating table of content. When we want to specify themes and features we can add YAML options like the one we have discussed in the previous section **"Report Template using YAML"**.
+
+```
+title: "Automate: Business Reporting with R"
+author: "Team Algoritma"
+date: "31/3/2020"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float:
+      collapsed: true
+      smooth_scroll: true
+    number_sections: true
+    theme: united
+    highlight: breezedark
+    fig_width: 6
+    fig_height: 4
+    df_print: paged
+    code_folding: hide
+```
+
+## PDF
+
+To create a PDF output, we can create a new R Markdown and choose the output for _PDF_ or manually setting `output: pdf_document` in YAML. Since many of the HTML document features apply to PDF output, it is preferable to just add the output manually in the YAML if we are working on multiple output. After that knitting can be done for PDF output. For example,
+
+```
+title: "Automate: Business Reporting with R"
+author: "Team Algoritma"
+date: "31/3/2020"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+  pdf_document:
+    toc: true
+```
+
+Notice that the indentation for `pdf_document` is inline with the other output `html_document`. YAML options for features in each output can be specified manually too. 
+
+### Features
+
+Many of the features available in HTLM document also available in PDF and can be set in YAML. Those are **table of content** and its depth (default to 3), **number sections**, **figure options**, and **syntax highlighting**. Other features such as setting the font, document margin, and specific types of citation can be explored further in [here](https://bookdown.org/yihui/rmarkdown/pdf-document.html#pdf-document).
+
+### Data Display
+
+Displaying data or tables in PDF is particularly different than in HTML. While HTML document can use `df_print: paged`, PDF can not. This is because of the limitation of static output that PDF has. The options available for displaying data in PDF output is **default**, **kable** and **tibble**, whereas kable offers a more tidy look compared to the others. Below is an example of a data displayed using option **kable**. 
+
+```
+title: "Automate: Business Reporting with R"
+author: "Team Algoritma"
+date: "31/3/2020"
+output:
+  pdf_document:
+    toc: yes
+    df_print: kabble
+```
+
+```{r, out.width = "100%", echo = FALSE, fig.align = "center"}
+knitr::include_graphics("assets/kable.PNG")
+```
+
+## Word
+
+To create a Word document, we can create a new R Markdown and choose the output for _Word_ or manually setting `output: word_document` in YAML. Same as PDF, many of the HTML document features apply to Word output therefore we can just add the output manually in the YAML. For example,
+
+```
+title: "Automate: Business Reporting with R"
+author: "Team Algoritma"
+date: "31/3/2020"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+  word_document:
+    toc: true
+    df_print: kable
+```
+
+```{r, out.width = "100%", echo = FALSE, fig.align = "center"}
+knitr::include_graphics("assets/Word.png")
+```
+
+R Markdown also has notable feature to create **style reference document** or a Word template. Later on, the template can be passed to the `reference_docx` options of the `word_document` in YAML. You can explore more features for Word document [here](https://bookdown.org/yihui/rmarkdown/word-document.html).
+
+## Interactive PowerPoint Presentation
+
+The last format we will discuss is the presentation formats which includes:
+
+* **Beamer Presentation**: PDF presentations with beamer
+* **Ioslides Presentation**: HTML presentations with ioslides
+* **Slidy Presentation**: HTML presentations with slidy
+* **Powerpoint Presentation**: PowerPoint presentation
+* **Revealjs Presentation**: HTML presentations with reveal.js (using additional package _revealjs_)
+
+In this chapter we will be focusing more on the _Beamer Presentation_. Nevertheless, each format will intuitively divide our content into slides. The following discuss about how a Beamer Presentation works, its features, and how to customize its appearance.
+
+### How It Works
+
+Creating a Beamer Presentation is almost the same as creating a new HTML document. You can create new R Markdown and choose the output for Beamer Presentation. Alternatively you can also manually set `output: beamer_presentation` in YAML.
+
+```
+title: "Beamer Presentation"
+author: "Team Algoritma"
+date: "8 April 2020"
+output: beamer_presentation
+```
+
+The difference with HTML document is that it will divide your content into several slides according to `#` and `##` (headers) of your document. Alternatively, you can also create new slide without using header but a horizontal rule `---`. For example, Here is demo of beamer presentation:
+
+```{r, out.width = "100%", echo = FALSE, fig.align = "center"}
+knitr::include_graphics("assets/beamer.png")
+```
+
+With this ability, we can simply create a presentation from the report we made beforehand by adjusting our content into its simplified version. 
+
+### Themes
+
+Beamer presentation also supports themes! You can specify its appearance in YAML using `theme`,` colortheme`, and `fonttheme`, for example:
+
+```
+title: "Beamer Presentation"
+author: "Team Algoritma"
+date: "8 April 2020"
+output: 
+  beamer_presentation:
+    theme: "Ilmenau"
+    colortheme: "beaver"
+    fonttheme: "structurebold"
+```
+
+```{r, out.width = "100%", echo = FALSE, fig.align = "center"}
+knitr::include_graphics("assets/beam-theme.png")
+```
+
+To explore more variety of themes for beamer presentation you can access the link [here](https://hartwork.org/beamer-theme-matrix/) and [here](http://deic.uab.es/~iblanes/beamer_gallery/).
+
+### Incremental Bullets
+
+If you want to use incremental bullets on your presentation, you can simply use YAML options `incremental: true`. Either way, you can also set incremental bullets for specific slides by adding `>` before the bullets. Below is some examples:
+
+**Setting incremental bullets in YAML:**
+
+```
+title: "Beamer Presentation"
+author: "Team Algoritma"
+date: "8 April 2020"
+output: 
+  beamer_presentation:
+    theme: "Ilmenau"
+    colortheme: "beaver"
+    fonttheme: "structurebold"
+    incremental: true
+```
+
+**Setting incremental bullets in each slide:**
+
+```
+## Slide with Bullets
+
+ - Bullet 1
+ - Bullet 2
+> - Bullet 3 (with incremental bullets)
+```
+
+Beamer presentation also support several features that available in HTML document such as **table of content**, **figure options**, and **displaying data or tables**. 
+
+There are more to explore for Beamer Presentation and so are various presentation outputs using R Markdown. For example, if you are interested in creating a dynamic presentation, you can explore _Ioslides Presentation_ or the famous _Revealjs Presentation_. For more features, you can explore the [R Markdown Definitive Guide, Chapter 4: Presentations](https://bookdown.org/yihui/rmarkdown/presentations.html).
+
+We have explored various outputs supported by R Markdown which can be used to develop business reports. Even so, there is still so much more to explore. To look for even more outputs generated from R Markdown, you can explore [The R Markdown Gallery](https://rmarkdown.rstudio.com/gallery.html).
+
+```{r, out.width = "100%", echo = FALSE, fig.align = "center"}
+knitr::include_graphics("assets/gal1.PNG")
+```
+
+# Parameterized Reports
+    
+R Markdown is great at making reports, but to optimize its potential, let's discuss on how R Markdown can make our report **reproducible** by using _Parameterized Report_.
+
+When we use Parameterized Report, R Markdown will include one or more _parameter_ whose _values_ will be set to create the report. This allow us to determine, for example, the dataset to be made into reports. Allowing us to create _Automated Reporting_!
+
+## Declaring Parameters
+
+Parameters are declared using the `params` option within the _YAML_. For example, the file below creates the parameter named **head** and assigns **5** as its default value.
+
+```{r, out.width = "100%", echo = FALSE, fig.align = "center"}
+knitr::include_graphics("assets/params.png")
+```
+
+## Using Parameter in Code Chunks
+
+Parameters are made available to be used in code chunk by accessing the value using `params$<parameter name>`. For example, the code below can be used to display **the first 5 observations** of the data. This is done by passing 5 (the default value) from `params$head` into the `head()` function which will return the first n-observation of a data. 
+
+```{r eval=F}
+USArrests %>% 
+  head(params$head)
+```
+
+As a side note, `head()` and other R codes used for data analysis will be discussed further in the following chapter "Basic Data Analysis in R".
+
+## Using Parameter Inline Code
+
+Parameters can also be called in an **inline code**. Below is an example of how to use params in a Code Chunk as well as in inline code.
+
+```{r, out.width = "100%", echo = FALSE, fig.align = "center"}
+knitr::include_graphics("assets/params-knit.png")
+```
+
+The convinience of using Parameterized Document is when we want to create a document with a specific parameters/inputs. We can create a document with a parameter by clicking **Knit with Parameters** on the Knit drop down menu. 
+
+In the example below, we try to knit with parameters by specifying '10' for the value in `params$head`. We can see on the right side of the picture, the output created will follow our desired input.
+
+```{r, out.width = "100%", echo = FALSE, fig.align = "center"}
+knitr::include_graphics("assets/params-knit2.png")
+```
+
+For further exploration about Parameterized Document, you can access the full guide [here](https://bookdown.org/yihui/rmarkdown/parameterized-reports.html).
+
+We have completed the chapter **R Markdown** for _Automate: Business Reporting with R_. In the next chapter, we will be focusing on understanding and exploring the basic data analysis in R which hopefully will enhance your analytical skills when dealing with data.
+
+*** 

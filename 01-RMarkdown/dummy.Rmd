@@ -1,21 +1,27 @@
 ---
-title: "Automate: Business Reporting with R"
+title: 'Automate: Business Reporting with R'
 author: "Team Algoritma"
-date: "31/3/2020"
-output: 
+date: "08/4/2020"
+output:
   html_document:
+    code_folding: hide
+    df_print: paged
+    fig_height: 4
+    fig_width: 6
+    highlight: breezedark
+    number_sections: true
+    theme: united
     toc: true
     toc_depth: 3
     toc_float:
       collapsed: true
       smooth_scroll: true
-    number_sections: true
-    theme: united
-    highlight: breezedark
-    fig_width: 6
-    fig_height: 4
-    df_print: paged
-    code_folding: hide
+  word_document:
+    df_print: kable
+    toc: true
+  pdf_document:
+    df_print: kable
+    toc: true
 ---
 
 ```{r setup, include=FALSE}

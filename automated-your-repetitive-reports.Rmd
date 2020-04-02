@@ -16,26 +16,162 @@ output:
 knitr::opts_chunk$set(
   echo = TRUE,
   warning = FALSE,
-  message = FALSE
+  message = FALSE,
+  fig.align = "center"
 )
 ```
 
 Many analytics teams get bored. They can not handle interesting tasks because the teams is too busy to produce the daily updates and report they need for business. For example, some teams still use reporting tools likes Microsoft Excel. If any repetitive reports which still using this tool, it might be time-consuming to do the tasks that should not be too difficult. Other analytical tools that are widely applied for data visualization or making reporting purposes built on databases can cause expensive design and maintenance processes.
 
-In many cases, there is an opportunity to reduce the burden substantially. By using open source tools to automatically process, visualize, and serve data to client with almost no humat effort at all and of course no charge. So in
+In many cases, there is an opportunity to reduce the burden substantially. By using open source tools to automatically process, visualize, and serve data to client with almost no humat effort at all and of course no charge. You will learn how to automate report using R by combining Rmarkdown and Shiny.
+
+This is the syllabus for this course:
+
+- **Reproducible function in R**
+
+  - How do function help us with reproducibility? 
+  - How to write function in R?
+  
+- **Introduction to Shiny**
+
+  - Structure of basic shiny apps
+  - The advantages of shiny
+
+- **Combining Shiny and Rmarkdown**
+
+- **[Optional] Create Awesome table using `kableExtra`**
+
 
 # Reproducible function in R
 
-```{r}
+A function is a set of statements that are compiled together to perform a specific task. R has a large number of built-in functions and users can create their own functions. In R, functions are objects so that the translator R can pass control to the function, along with arguments that might be needed for the function to complete the action.
+
+**How do function help us with reproducibility?**
+
+The benefit of writing function is to avoid repetation of your code. When you want to copy a piece of code five times and only change the variable in each instance, you better convert it to a *function*. In general, you should not repeat yourself when writing a code, it is called *DRY* (Don't Repeat Yourself) principle.
+
+## How to write function in R?
+
+The R function is an object that created with the keyword **function**. The basic command of an R function definition is as follows:
+
+```{r, eval=FALSE}
+
+function_name <- function(argument_1, argument_2, ....){
+  
+  function_body,
+  
+  return_value
+  
+}
 
 ```
 
-# Create awesome table using KableExtra
+So the following are the differences of each component in the function:
+
+* **Function name**: this is the actual name of the function which store in environment as an object. We just need to write the name of the function if we want to use it.
+* **Argument**: When a function is called, we assign a value to the argument. Argument are optional; so the function may not contain an argument, also can have a defaults value.
+* **Function body**: The function body contains a collection of statements that define what function does. We can define commands to process an input (arguments) here.
+* **Return value**: The return value of function is the last expression or command in the body of the function to be evaluated. We also define explicitly with the `return(object_name)` command that we want to return as an output value. 
+
+R has many in-built functions which can be directly called in the program without defining them first. We can also create and use our own functions referred as user defined functions.
+
+### Built-in Function
+
+`plot()` is one of built-in function in R for plotting of R objects. For simple scatter plots, we just need to define axis x and axis y in the argument of `plot()` function.
 
 ```{r}
-
+plot(x = cars$speed, y = cars$dist)
 ```
 
+### User-defined function
+
+
+Let's say we want to develop new function to create the same as previous plot with an improvement aesthetics using `ggplot2` packages. We will not discuss more about the functionality of the `ggplot2` package, but if you want to learn by yourself please visit [this page](https://ggplot2.tidyverse.org/)
+
+```{r}
+scatter_plot <- function(data, xaxis, yaxis, title, sub){
+  
+  # define the library
+  
+  library(ggplot2)
+  library(rlang)
+  
+  xaxis <- sym(xaxis)
+  yaxis <- sym(yaxis)
+  
+  # visualization
+  
+  plot <- ggplot(data = data, mapping = aes(x = !!xaxis, y = !!yaxis)) +
+    geom_point() +
+    labs(title = title,
+         subtitle = sub) +
+    theme_minimal()
+  
+  return(plot)
+  
+}
+```
+
+**Calling a Function**:
+
+When we execute the above code, it produces the following result:
+
+```{r}
+scatter_plot(
+  data = cars, 
+  xaxis = "speed", 
+  yaxis = "dist",
+  title = "Correlation Plot",
+  sub = "The speed of cars (mph) and the distances taken to stop(ft)"
+)
+```
+
+We can apply `scatter_plot` function to another data, see the following example:
+
+```{r}
+scatter_plot(
+  data = iris, 
+  xaxis = "Sepal.Length", 
+  yaxis = "Petal.Length",
+  title = "Relation of Sepal and Petal Length",
+  sub = "Source: Iris flower dataset"
+)
+```
+
+
+**Calling a Function without an Argument**
+
+```{r}
+new_scatter_plot <- function(){
+  
+  # define the library
+  
+  library(ggplot2)
+  
+  # visualization
+  
+  plot <- ggplot(data = cars, mapping = aes(x = speed, y = dist)) +
+    geom_point() +
+    labs(title = "Correlation Plot",
+         subtitle = "The speed of cars (mph) and the distances taken to stop(ft)") +
+    theme_minimal()
+  
+  return(plot)
+  
+}
+
+new_scatter_plot()
+```
+
+Limitations if we do not define an argument, the function will be static according to the commands in function body. So, we need to add an argument if we want to create a dynamic function that can adjust the result with user-input. 
+
+> The BBC data team, developed an R package to make the process of creating publication-ready graphics in their style-guide using R’s ggplot2 library a more reproducible process, as well as making it easier for people new to R to create graphics:
+
+```{r echo = FALSE, out.width="80%"}
+knitr::include_graphics(path = "assets/bbplot_example_plots.png")
+```
+
+All the custom function we made for this training purposes are stored in the `helper.R` file. You can dive deep to understanding  the concept of function in R. 
 
 # Intro to Shiny
 
@@ -43,10 +179,41 @@ Shiny is an open package from RStudio, which provides a web application framewor
 
 Shiny provides automatic reactive binding between inputs and outputs. It also provides extensive pre-built widgets which make it possible to build elegant and powerful applications with minimal effort.
 
-Structure of a basic shiny apps:
+## Structure of a basic shiny apps:
 
-* global.R: For setting-up the apps’ environment, e.g., libraries, import and initial cleaning dataset
-* ui.R: User Interface (UI) for displaying input and output
-* server.R: For processing user’s input and render it into output
 
-One of many useful libraries that we can use is shinydashboard. We can use shinydashboard to create a dashboard apps for our users.
+* **ui.R**: User Interface (UI) for displaying input and output. This source code, is used to set-up what user will actually see in the web app, i.e. the layout of the web page, title, slider, widgets, plot, etc.
+* **server.R**: For processing user’s input and render it into output
+
+> Everything that the user sees goes under UI.R, and everything that user does not see goes under server.R
+
+```{r echo=FALSE, out.width="80%"}
+knitr::include_graphics(path = "assets/shiny architecture.png")
+```
+
+The following are the steps to describe image above:
+
+1. The user gives an input to the interface generated by UI.R
+2. The input is passed to server.R. This step does not need to be programmed. Shiny provided connectivity between the created interface and the R engine.
+3. The data is processed in server.R
+4. server.R return an output.
+
+
+## Advantages of Shiny
+
+* **Open Source:**: Building and getting a shiny app online is free of cost, if you want to deploy your app on free version of [shinyapps.io](https://www.shinyapps.io/).
+* **Not required a technical skill**: It requires no prior knowledge of HTML, CSS, or javascript to create a fully functional shiny app.
+* **Complete automation of the app**: A shiny app can be automated to perform a set of operations to produce the desire output based on input.
+
+# Combining Shiny and Rmarkdown
+
+```{r}
+
+```
+
+
+# [Optional] Create awesome table using KableExtra
+
+```{r}
+
+```

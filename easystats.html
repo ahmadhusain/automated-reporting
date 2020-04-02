@@ -2859,7 +2859,7 @@ div.tocify {
 ## &lt;U+2714&gt; see         0.4.1.1   &lt;U+2714&gt; effectsize  0.3.0  
 ## &lt;U+2714&gt; correlation 0.1.1     &lt;U+2714&gt; modelbased  0.1.2  
 ## &lt;U+2714&gt; report      0.1.0     
-## Warnings or errors in CRAN checks for package(s) &#39;modelbased&#39;.</code></pre>
+## Warnings or errors in CRAN checks for package(s) &#39;bayestestR&#39;.</code></pre>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">library</span>(tidyverse)</a>
 <a class="sourceLine" id="cb3-2" title="2"><span class="kw">library</span>(rsample)</a>
 <a class="sourceLine" id="cb3-3" title="3"><span class="kw">library</span>(caret)</a></code></pre></div>
@@ -3070,7 +3070,7 @@ div.tocify {
 <a class="sourceLine" id="cb22-7" title="7">    <span class="st">&quot;and &quot;</span>, </a>
 <a class="sourceLine" id="cb22-8" title="8">    yname, </a>
 <a class="sourceLine" id="cb22-9" title="9">    <span class="st">&quot; is &quot;</span>, </a>
-<a class="sourceLine" id="cb22-10" title="10">    <span class="kw">ifelse</span>(temp<span class="op">$</span>estimate <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>, <span class="st">&quot;positive&quot;</span>, <span class="st">&quot;negative&quot;</span>), </a>
+<a class="sourceLine" id="cb22-10" title="10">    <span class="kw">ifelse</span>(temp<span class="op">$</span>estimate <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>, <span class="st">&quot;positive &quot;</span>, <span class="st">&quot;negative &quot;</span>), </a>
 <a class="sourceLine" id="cb22-11" title="11">    <span class="kw">ifelse</span>(temp<span class="op">$</span>p.value <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.05</span>, <span class="st">&quot;significant as a statistics&quot;</span>, <span class="st">&quot;but not significant enough&quot;</span>), </a>
 <a class="sourceLine" id="cb22-12" title="12">    <span class="st">&quot; with a value &quot;</span>, </a>
 <a class="sourceLine" id="cb22-13" title="13">    <span class="kw">round</span>(temp<span class="op">$</span>estimate, <span class="dt">digits =</span> <span class="dv">2</span>)</a>
@@ -3078,7 +3078,7 @@ div.tocify {
 <a class="sourceLine" id="cb22-15" title="15">  </a>
 <a class="sourceLine" id="cb22-16" title="16">}</a></code></pre></div>
 <div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" title="1">narativecor &lt;-<span class="st"> </span><span class="kw">get_narative_cor</span>(<span class="dt">x =</span> employee<span class="op">$</span>YearsAtCompany, employee<span class="op">$</span>MonthlyIncome, <span class="dt">xname =</span> <span class="st">&quot;Years at Company&quot;</span>, <span class="dt">yname =</span> <span class="st">&quot;Monthly Income&quot;</span>)</a></code></pre></div>
-<p>The Pearson’s product-moment correlation between Years at Companyand Monthly Income is positivesignificant as a statistics with a value 0.54</p>
+<p>The Pearson’s product-moment correlation between Years at Companyand Monthly Income is positive significant as a statistics with a value 0.54</p>
 </div>
 <div id="print-all-parameter-from-model" class="section level2">
 <h2><span class="header-section-number">3.2</span> Print all parameter from Model</h2>
@@ -3094,30 +3094,31 @@ div.tocify {
 <a class="sourceLine" id="cb24-10" title="10">  <span class="st">&quot;We fitted a logistic regression to predict &quot;</span>, </a>
 <a class="sourceLine" id="cb24-11" title="11">  target, </a>
 <a class="sourceLine" id="cb24-12" title="12">  <span class="st">&quot;.&quot;</span>,</a>
-<a class="sourceLine" id="cb24-13" title="13">  <span class="st">&quot; The model Intercepet is at &quot;</span>, </a>
-<a class="sourceLine" id="cb24-14" title="14">  <span class="kw">round</span>(tidy_estimate<span class="op">$</span>estimate[<span class="dv">1</span>], <span class="dt">digits =</span> <span class="dv">2</span>),</a>
-<a class="sourceLine" id="cb24-15" title="15">  <span class="st">&quot;. Within this model: &lt;br&gt;&quot;</span></a>
-<a class="sourceLine" id="cb24-16" title="16">)</a>
-<a class="sourceLine" id="cb24-17" title="17"></a>
-<a class="sourceLine" id="cb24-18" title="18"><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">2</span><span class="op">:</span><span class="kw">nrow</span>(tidy_estimate)) {</a>
-<a class="sourceLine" id="cb24-19" title="19"></a>
-<a class="sourceLine" id="cb24-20" title="20">  text[i] &lt;-<span class="st"> </span><span class="kw">paste0</span>(</a>
-<a class="sourceLine" id="cb24-21" title="21">    i<span class="dv">-1</span>,</a>
-<a class="sourceLine" id="cb24-22" title="22">    <span class="st">&quot;. The effect of &quot;</span>, </a>
-<a class="sourceLine" id="cb24-23" title="23">    tidy_estimate<span class="op">$</span>term[i], </a>
-<a class="sourceLine" id="cb24-24" title="24">    <span class="st">&quot; is &quot;</span>, </a>
-<a class="sourceLine" id="cb24-25" title="25">    <span class="kw">ifelse</span>(tidy_estimate<span class="op">$</span>estimate[i] <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>, <span class="st">&quot;positive&quot;</span>, <span class="st">&quot;negative&quot;</span>), </a>
-<a class="sourceLine" id="cb24-26" title="26">    <span class="st">&quot; with value: &quot;</span>, </a>
-<a class="sourceLine" id="cb24-27" title="27">    <span class="kw">round</span>(tidy_estimate<span class="op">$</span>estimate[i], <span class="dt">digits =</span> <span class="dv">2</span>), </a>
-<a class="sourceLine" id="cb24-28" title="28">    <span class="st">&quot;&lt;br&gt;&quot;</span></a>
-<a class="sourceLine" id="cb24-29" title="29">  ) </a>
-<a class="sourceLine" id="cb24-30" title="30">}</a>
-<a class="sourceLine" id="cb24-31" title="31"> </a>
-<a class="sourceLine" id="cb24-32" title="32"><span class="kw">return</span>(text)</a>
-<a class="sourceLine" id="cb24-33" title="33"> </a>
-<a class="sourceLine" id="cb24-34" title="34">}</a>
-<a class="sourceLine" id="cb24-35" title="35"></a>
-<a class="sourceLine" id="cb24-36" title="36">narativemodel &lt;-<span class="st"> </span><span class="kw">get_narative_model</span>(<span class="dt">model =</span> stepmodel_logit, <span class="dt">target =</span> <span class="st">&quot;Attrition Status&quot;</span>)</a></code></pre></div>
+<a class="sourceLine" id="cb24-13" title="13">  <span class="st">&quot;&quot;</span>,</a>
+<a class="sourceLine" id="cb24-14" title="14">  <span class="st">&quot; The model Intercepet is at &quot;</span>, </a>
+<a class="sourceLine" id="cb24-15" title="15">  <span class="kw">round</span>(tidy_estimate<span class="op">$</span>estimate[<span class="dv">1</span>], <span class="dt">digits =</span> <span class="dv">2</span>),</a>
+<a class="sourceLine" id="cb24-16" title="16">  <span class="st">&quot;. Within this model: &lt;br&gt;&quot;</span></a>
+<a class="sourceLine" id="cb24-17" title="17">)</a>
+<a class="sourceLine" id="cb24-18" title="18"></a>
+<a class="sourceLine" id="cb24-19" title="19"><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">2</span><span class="op">:</span><span class="kw">nrow</span>(tidy_estimate)) {</a>
+<a class="sourceLine" id="cb24-20" title="20"></a>
+<a class="sourceLine" id="cb24-21" title="21">  text[i] &lt;-<span class="st"> </span><span class="kw">paste0</span>(</a>
+<a class="sourceLine" id="cb24-22" title="22">    i<span class="dv">-1</span>,</a>
+<a class="sourceLine" id="cb24-23" title="23">    <span class="st">&quot;. The effect of &quot;</span>, </a>
+<a class="sourceLine" id="cb24-24" title="24">    tidy_estimate<span class="op">$</span>term[i], </a>
+<a class="sourceLine" id="cb24-25" title="25">    <span class="st">&quot; is &quot;</span>, </a>
+<a class="sourceLine" id="cb24-26" title="26">    <span class="kw">ifelse</span>(tidy_estimate<span class="op">$</span>estimate[i] <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>, <span class="st">&quot;positive&quot;</span>, <span class="st">&quot;negative&quot;</span>), </a>
+<a class="sourceLine" id="cb24-27" title="27">    <span class="st">&quot; with value: &quot;</span>, </a>
+<a class="sourceLine" id="cb24-28" title="28">    <span class="kw">round</span>(tidy_estimate<span class="op">$</span>estimate[i], <span class="dt">digits =</span> <span class="dv">2</span>), </a>
+<a class="sourceLine" id="cb24-29" title="29">    <span class="st">&quot;&lt;br&gt;&quot;</span></a>
+<a class="sourceLine" id="cb24-30" title="30">  ) </a>
+<a class="sourceLine" id="cb24-31" title="31">}</a>
+<a class="sourceLine" id="cb24-32" title="32"> </a>
+<a class="sourceLine" id="cb24-33" title="33"><span class="kw">return</span>(text)</a>
+<a class="sourceLine" id="cb24-34" title="34"> </a>
+<a class="sourceLine" id="cb24-35" title="35">}</a>
+<a class="sourceLine" id="cb24-36" title="36"></a>
+<a class="sourceLine" id="cb24-37" title="37">narativemodel &lt;-<span class="st"> </span><span class="kw">get_narative_model</span>(<span class="dt">model =</span> stepmodel_logit, <span class="dt">target =</span> <span class="st">&quot;Attrition Status&quot;</span>)</a></code></pre></div>
 <p>We fitted a logistic regression to predict Attrition Status. The model Intercepet is at 0.99. Within this model: <br>, 1. The effect of Business Travel Travel Frequently is positive with value: 2.09<br>, 2. The effect of Business Travel Travel Rarely is positive with value: 1.34<br>, 3. The effect of Daily Rate is negative with value: 0<br>, 4. The effect of Distance From Home is positive with value: 0.03<br>, 5. The effect of Environment Satisfaction is negative with value: -0.47<br>, 6. The effect of Gender Male is positive with value: 0.4<br>, 7. The effect of Job Involvement is negative with value: -0.63<br>, 8. The effect of Job Level is positive with value: 0.46<br>, 9. The effect of Job Satisfaction is negative with value: -0.35<br>, 10. The effect of Marital Status Married is positive with value: 0.69<br>, 11. The effect of Marital Status Single is positive with value: 1.21<br>, 12. The effect of Monthly Income is negative with value: 0<br>, 13. The effect of Num Companies Worked is positive with value: 0.15<br>, 14. The effect of Over Time Yes is positive with value: 1.47<br>, 15. The effect of Percent Salary Hike is negative with value: -0.04<br>, 16. The effect of Performance Rating is positive with value: 0.65<br>, 17. The effect of Total Working Years is negative with value: -0.1<br>, 18. The effect of Training Times Last Year is negative with value: -0.22<br>, 19. The effect of Work Life Balance is negative with value: -0.19<br>, 20. The effect of Years At Company is positive with value: 0.07<br>, 21. The effect of Years In Current Role is negative with value: -0.1<br>, 22. The effect of Years Since Last Promotion is positive with value: 0.18<br>, 23. The effect of Years With Curr Manager is negative with value: -0.09<br></p>
 </div>
 </div>

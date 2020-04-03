@@ -1,0 +1,45 @@
+---
+title: 'Text Formatting in R Markdown'
+output: html_document
+---
+
+Type freely to produce a plain text. End a line with two spaces to start a new paragraph. These are the commonly used text formatting:
+
+**Bold**
+
+*italic*
+
+~~striketrough~~
+
+`verbatim code`
+
+> block quote
+
+# Header 1
+## Header 2
+### Header 3 (you can make Header 1-6)
+
+<https://www.algorit.ma>
+
+[Algoritma website](algorit.ma)
+
+image inline ![](assets/notebook-insert-chunk.png) or image below:
+
+![Caption](assets/image/logo/logo-algo.png)
+
+* Bullet list:
+    + sub-item 1
+    + sub-item 2
+        - sub-sub-item1
+* Continue bullet .. 
+
+1. Numbered list:
+      i) sub-item 1
+          a. sub-sub-item1
+2. Continue number..
+
+Insert a footnote here[^1]
+
+[^1]: explain a footnote
+
+

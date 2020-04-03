@@ -1,0 +1,36 @@
+---
+title: "Beamer Presentation"
+author: "Team Algoritma"
+date: "8 April 2020"
+output: 
+  beamer_presentation:
+    theme: "Ilmenau"
+    colortheme: "beaver"
+    fonttheme: "structurebold"
+    incremental: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+# Demo Beamer
+
+## Slide with Bullets
+
+- Bullet 1
+- Bullet 2
+- Bullet 3
+
+## Slide with R Output
+
+```{r cars, echo = TRUE}
+summary(cars)
+```
+
+## Slide with Plot
+
+```{r pressure}
+plot(pressure)
+```
+

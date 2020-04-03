@@ -1,0 +1,17 @@
+## 1
+
+data_join %>% 
+  filter(department == "research_development",
+         attrition == "yes") %>%
+  group_by(job_role) %>% 
+  summarize(count = n(),
+            avg_relationship = mean(relationship_satisfaction)) %>% 
+  arrange(desc(count))
+
+## 2
+
+data_join %>% 
+  group_by(department, gender) %>% 
+  summarize(count = n()) %>% 
+  group_by(department) %>% 
+  mutate(pcent = count/sum(count)*100)

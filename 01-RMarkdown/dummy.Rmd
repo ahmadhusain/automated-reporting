@@ -1,0 +1,85 @@
+---
+title: 'Automate: Business Reporting with R'
+author: "Team Algoritma"
+date: "08/4/2020"
+output:
+  html_document:
+    code_folding: hide
+    df_print: paged
+    fig_height: 4
+    fig_width: 6
+    highlight: breezedark
+    number_sections: true
+    theme: united
+    toc: true
+    toc_depth: 3
+    toc_float:
+      collapsed: true
+      smooth_scroll: true
+  word_document:
+    df_print: kable
+    toc: true
+  pdf_document:
+    df_print: kable
+    toc: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Lessons
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+### Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+# Traditional Tab {.tabset}
+
+## Tab 1
+
+tab content 1
+
+## Tab 2
+
+tab content 2
+
+# Pill Tab {.tabset .tabset-fade .tabset-pills}
+
+## Tab 1
+
+tab content 1
+
+## Tab 2
+
+tab content 2
+
+# Data Display
+
+Below is **Motor Trend Car Road Test** data. The data was extracted from the 1974 Motor Trend US magazine, and comprises fuel consumption and 10 aspects of automobile design and performance for 32 automobiles (1973–74 models).
+
+```{r}
+mtcars
+```
+
+
+
+
+
+

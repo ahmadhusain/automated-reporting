@@ -242,9 +242,10 @@ The primary measure of votality used by stock traders and financial analysts is 
 Statistical methods of measures of central tendency, measure of spread are helpful for the purpose of comparison and analysis of distribution involving only one variable. However, decribing the relationship between two or more variables, is another important part of statistics. In many business research situations, the key of to decision making lies in understanding relationship between two or more variables. The statistical methods of *Covariance* and *Correlation* are helpful in knowing the relationship between two or more vairbles.
 
 In all these cases involving two or more variables, we may be interested in seeing:
-  - if there is any association between the variables;
-  - if there is an association, is it strong enough to be useful;
-  - if so, what form the relationship between the two variables takes
+
+* if there is any association between the variables;
+* if there is an association, is it strong enough to be useful;
+* if so, what form the relationship between the two variables takes
   
 ### Covariance
 
@@ -318,16 +319,12 @@ Machine learning  on a very basic level, refers to a subfield of computer scienc
 
 With the advances in machine learning, society as a collective has pushed new boundaries around making machines “smarter”, or less-sensationally, making machines more able to perform tasks without human intervention. The whole notion of making machines perform these tasks that, for a long time in history were done by human brains, is what most people meant when they say “Artificial intelligence”. Compared to machine learning, AI describes a broad concept (“ideal”). Machine learning on the other hand, offers a particular approach to arriving at that “ideal”.
 
-
-## Understanding Supervised and Unsupervised
-
-An important categorization in machine learning literature is to identify algorithms by the “signal” we made available to a model.
-
 Supervised Machine Learning currently makes up most of the ML that is being used by systems across the world. The input variable (x) is used to connect with the output variable (y) through the use of an algorithm. All of the input, the output, the algorithm, and the scenario are being provided by humans.
 
 > Supervised learning: We feed our model training examples (input) and tag each of these example with a corresponding target, and is so doing, allow our model to produce a function that maps our input to its target.
 
-Supervised learning algorithms are used to solve for classification and regression problems. Good examples for the financial industry are credit risk scoring (regression or classification), loan default prediction (classification), and customer lifetime value (regression).
+
+Supervised learning algorithms allows machines to do prediction analysis for a specific target. Supervised learning are used to solve for classification and regression problems. Good examples for the financial industry are credit risk scoring (regression or classification), loan default prediction (classification), and customer lifetime value (regression). Supervised learning is also useful for performing predictive analytics on Employee Attrition data, which we are going to explore in the following section.
 
 > Unsupervised learning: If we feed our model training examples (input) without any labels, it is unsupervised learning.
 
@@ -378,9 +375,9 @@ train <- upSample(x = select(train, -Attrition),
 
 ```
 
-### Modeling Logistic Regression
+### Modeling Employee Retention for Predictive Analytics
 
-In logistic regression, we can use `stepwise` too for the non-business wise feature selection.
+In logistic regression, we can use `stepwise` too for the non-business wise feature selection.e can use an algorithm called Logistic Regression to build a prediction model for employee retention. In R, we can pass the data and the prediction scenario (formula) to the function `glm()`. Additionally, we can also perform feature selection to improve the model performance. In this example we use the non-business wise stepwise regression (using the function step())
 
 ```{r}
 model_logit <- glm(formula = Attrition ~., 
@@ -395,29 +392,28 @@ tidy(stepmodel_logit)
 
 ### Model Interpretation
 
-Using the model we have built with stepwise regression, we can create a likelihood table and analyze the contribution of each variable in determining probability. For example, let’s take a coefficient value from a numerical variable:
-
-Based on model summary we get information the coefficient (see estimate column) for Age is -0.0187. This negtive coefficient can be interpreted as:
+Using the model we have built with stepwise regression, we can create a likelihood table and analyze the contribution of each variable in determining probability. Stepwise regression will calculate a coefficient for each variable. The coefficient reflects variable contribution to the prediction result and can be transformed into odds ratio. For example, let’s take a coefficient value from a numerical variable Age that is -0.015. This negative coefficient can be interpreted as:
 
 > The older the employee, the smaller chance to leave. 
 
 ```{r}
 tidy(stepmodel_logit) %>% 
   mutate(odds_ratio = round(exp(estimate),2),
-         p.value = round(p.value, 2)) %>% 
-  select(term, odds_ratio, p.value) %>% 
-  arrange(-odds_ratio)
+         p.value = round(p.value, 2),
+         estimate = round(estimate, 2)) %>% 
+  select(term, estimate, odds_ratio, p.value) %>% 
+  arrange(-estimate) %>% 
+  filter(p.value < 0.05)
 ```
 
 Here are a quick summary of the table above:
 
-1. Business Travel Frequently and Business Travel Rarely have a positive coefficient, so if the Employee is traveling for business more likely to leave the company than the employee who non-traveling.
-2. Overtime have a positive coefficient and the odds ratio yes to no is 5,45, which is to say that the odds for employee who working overtime will leave the company are about 445% more than that of their who not working overtime.
-3. The variables are linked (directly or indirectly) to work-life-balance (Job Satisfaction, Environment Satisfaction, Job Involvement, ) have a negative coefficient, and of course the odds ratio will be less than one. We can say that the more satisfied and the higher job involvement the employee, the less likely that employees will leave the company.
+1. Overtime has a positive coefficient with the odds ratio yes to no is 5.32. This says that the event of an employee who works overtime and leaves the company is about 5.32 more likely than the employee who is not working overtime
+2. The variables are linked (directly or indirectly) to work-life-balance (Job Satisfaction, Environment Satisfaction, Job Involvement, ) have a negative coefficient. We can say that the more satisfied and the higher job involvement the employee, the less likely that employees will leave the company.
 
 ### Predicting
 
-To test whether our model has a good performance, it will be seen whether our model can be good enough in classifying the *Attrition* status in the unseen data.
+To test whether our model has a good performance, we can check the number of correctly classified/misclassified Attrition status in the unseen data.
 
 ```{r}
 prob_logit <- predict(stepmodel_logit, newdata = test, type = "response")
@@ -440,11 +436,11 @@ Observe from the confusion matrix that:
 * Out of the 246 employee that stay we classified 184 of them correctly
 * Out of the 319 cases of attrition in our test set, we classified 236 of them correctly
 
-## Convert statistical object like `easystats` style
+## Convert Statistical Object Like `easystats` Style
 
-`easystats` is a development packages in R to provide a unifying and consistent framework to tame and harness the scary of R statistical models. We can automate convert an object of R from simple statistical model into textual report that ease our our daily working in making interpretation from the data.
+`easystats` is a development packages in R to provide a unifying and consistent framework to tame and harness the scary of R statistical models. We can automate convert an object of R from simple statistical model into textual report that ease our daily works in making interpretation of the data.
 
-### Correlation test
+### Correlation Test
 
 ```{r}
 get_narative_cor <- function(x, y, xname, yname){
@@ -453,11 +449,11 @@ get_narative_cor <- function(x, y, xname, yname){
   paste0(
     "The Pearson's product-moment correlation between ",
     xname, 
-    "and ", 
+    " and ", 
     yname, 
     " is ", 
     ifelse(temp$estimate > 0, "positive ", "negative "), 
-    ifelse(temp$p.value < 0.05, "significant as a statistics", "but not significant enough"), 
+    ifelse(temp$p.value < 0.05, "significant", "but not significant enough"), 
     " with a value ", 
     round(temp$estimate, digits = 2)
   )
@@ -471,7 +467,7 @@ narativecor <- get_narative_cor(x = employee$YearsAtCompany, employee$MonthlyInc
 
 `r narativecor`
 
-### Print all parameter from Model
+### Print All Parameter from Model
 
 ```{r}
 get_narative_model <- function(model, target){

@@ -3010,7 +3010,12 @@ div.tocify {
 <div id="covariance-and-correlation" class="section level2">
 <h2><span class="header-section-number">1.3</span> Covariance and Correlation</h2>
 <p>Statistical methods of measures of central tendency, measure of spread are helpful for the purpose of comparison and analysis of distribution involving only one variable. However, decribing the relationship between two or more variables, is another important part of statistics. In many business research situations, the key of to decision making lies in understanding relationship between two or more variables. The statistical methods of <em>Covariance</em> and <em>Correlation</em> are helpful in knowing the relationship between two or more vairbles.</p>
-<p>In all these cases involving two or more variables, we may be interested in seeing: - if there is any association between the variables; - if there is an association, is it strong enough to be useful; - if so, what form the relationship between the two variables takes</p>
+<p>In all these cases involving two or more variables, we may be interested in seeing:</p>
+<ul>
+<li>if there is any association between the variables;</li>
+<li>if there is an association, is it strong enough to be useful;</li>
+<li>if so, what form the relationship between the two variables takes</li>
+</ul>
 <div id="covariance" class="section level3">
 <h3><span class="header-section-number">1.3.1</span> Covariance</h3>
 <p>When we have two samples, X and Y, of the same size, then the covariance is an estimate of how variation in X is related to the variation in Y. Covariance measures how two variables covary and is represented as:</p>
@@ -3057,15 +3062,11 @@ div.tocify {
 <h2><span class="header-section-number">2.1</span> Motivation and Definition “Machine Learning”</h2>
 <p>Machine learning on a very basic level, refers to a subfield of computer science that “gives computer the ability to learn without being explicitly programmed”, this realization and quote was credited to Arthur Samuel, who coined the term “machine learning” and created the world’s first self-learning program called the Samuel Checkers-playing Program in 1952. When Samuel was about to demonstrate the program, the founder and president of IBM remarked that the demonstration would raise the price of IBM stock by 15 points. It did. In 1961 Samuel challenged the Connecticut state checker champion (4th ranked nationwide) and his program won.</p>
 <p>With the advances in machine learning, society as a collective has pushed new boundaries around making machines “smarter”, or less-sensationally, making machines more able to perform tasks without human intervention. The whole notion of making machines perform these tasks that, for a long time in history were done by human brains, is what most people meant when they say “Artificial intelligence”. Compared to machine learning, AI describes a broad concept (“ideal”). Machine learning on the other hand, offers a particular approach to arriving at that “ideal”.</p>
-</div>
-<div id="understanding-supervised-and-unsupervised" class="section level2">
-<h2><span class="header-section-number">2.2</span> Understanding Supervised and Unsupervised</h2>
-<p>An important categorization in machine learning literature is to identify algorithms by the “signal” we made available to a model.</p>
 <p>Supervised Machine Learning currently makes up most of the ML that is being used by systems across the world. The input variable (x) is used to connect with the output variable (y) through the use of an algorithm. All of the input, the output, the algorithm, and the scenario are being provided by humans.</p>
 <blockquote>
 <p>Supervised learning: We feed our model training examples (input) and tag each of these example with a corresponding target, and is so doing, allow our model to produce a function that maps our input to its target.</p>
 </blockquote>
-<p>Supervised learning algorithms are used to solve for classification and regression problems. Good examples for the financial industry are credit risk scoring (regression or classification), loan default prediction (classification), and customer lifetime value (regression).</p>
+<p>Supervised learning algorithms allows machines to do prediction analysis for a specific target. Supervised learning are used to solve for classification and regression problems. Good examples for the financial industry are credit risk scoring (regression or classification), loan default prediction (classification), and customer lifetime value (regression). Supervised learning is also useful for performing predictive analytics on Employee Attrition data, which we are going to explore in the following section.</p>
 <blockquote>
 <p>Unsupervised learning: If we feed our model training examples (input) without any labels, it is unsupervised learning.</p>
 </blockquote>
@@ -3079,7 +3080,7 @@ div.tocify {
 </ul>
 </div>
 <div id="employee-retention-analysis" class="section level2">
-<h2><span class="header-section-number">2.3</span> Employee Retention Analysis</h2>
+<h2><span class="header-section-number">2.2</span> Employee Retention Analysis</h2>
 <p>The objective is to understand what factors contributed most to employee attrition and to create a model that can predict if a certain employee will leave the company or not. The goal also includes helping in formulating different retention strategies on targeted employees. Overall, the implementation of this model will allow management to create better decision-making actions.</p>
 <p>Let’s import our data and inspect our variable;</p>
 <div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb62-1" title="1">employee &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;data_input/HR-Employee-Attrition.csv&quot;</span>)</a></code></pre></div>
@@ -3122,9 +3123,9 @@ div.tocify {
 <li>RelationshipSatisfaction: 1 Low, 2 Medium, 3 High, 4 Very High</li>
 <li>WorkLifeBalance: 1 Bad, 2 Good, 3 Better, 4 Best.</li>
 </ul>
-<div id="modeling-logistic-regression" class="section level3">
-<h3><span class="header-section-number">2.3.1</span> Modeling Logistic Regression</h3>
-<p>In logistic regression, we can use <code>stepwise</code> too for the non-business wise feature selection.</p>
+<div id="modeling-employee-retention-for-predictive-analytics" class="section level3">
+<h3><span class="header-section-number">2.2.1</span> Modeling Employee Retention for Predictive Analytics</h3>
+<p>In logistic regression, we can use <code>stepwise</code> too for the non-business wise feature selection.e can use an algorithm called Logistic Regression to build a prediction model for employee retention. In R, we can pass the data and the prediction scenario (formula) to the function <code>glm()</code>. Additionally, we can also perform feature selection to improve the model performance. In this example we use the non-business wise stepwise regression (using the function step())</p>
 <div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb65-1" title="1">model_logit &lt;-<span class="st"> </span><span class="kw">glm</span>(<span class="dt">formula =</span> Attrition <span class="op">~</span>., </a>
 <a class="sourceLine" id="cb65-2" title="2">                   <span class="dt">data =</span> train, </a>
 <a class="sourceLine" id="cb65-3" title="3">                   <span class="dt">family =</span> <span class="st">&quot;binomial&quot;</span>)</a>
@@ -3140,32 +3141,32 @@ div.tocify {
 </div>
 </div>
 <div id="model-interpretation" class="section level3">
-<h3><span class="header-section-number">2.3.2</span> Model Interpretation</h3>
-<p>Using the model we have built with stepwise regression, we can create a likelihood table and analyze the contribution of each variable in determining probability. For example, let’s take a coefficient value from a numerical variable:</p>
-<p>Based on model summary we get information the coefficient (see estimate column) for Age is -0.0187. This negtive coefficient can be interpreted as:</p>
+<h3><span class="header-section-number">2.2.2</span> Model Interpretation</h3>
+<p>Using the model we have built with stepwise regression, we can create a likelihood table and analyze the contribution of each variable in determining probability. Stepwise regression will calculate a coefficient for each variable. The coefficient reflects variable contribution to the prediction result and can be transformed into odds ratio. For example, let’s take a coefficient value from a numerical variable Age that is -0.015. This negative coefficient can be interpreted as:</p>
 <blockquote>
 <p>The older the employee, the smaller chance to leave.</p>
 </blockquote>
 <div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb66-1" title="1"><span class="kw">tidy</span>(stepmodel_logit) <span class="op">%&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb66-2" title="2"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">odds_ratio =</span> <span class="kw">round</span>(<span class="kw">exp</span>(estimate),<span class="dv">2</span>),</a>
-<a class="sourceLine" id="cb66-3" title="3">         <span class="dt">p.value =</span> <span class="kw">round</span>(p.value, <span class="dv">2</span>)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb66-4" title="4"><span class="st">  </span><span class="kw">select</span>(term, odds_ratio, p.value) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb66-5" title="5"><span class="st">  </span><span class="kw">arrange</span>(<span class="op">-</span>odds_ratio)</a></code></pre></div>
+<a class="sourceLine" id="cb66-3" title="3">         <span class="dt">p.value =</span> <span class="kw">round</span>(p.value, <span class="dv">2</span>),</a>
+<a class="sourceLine" id="cb66-4" title="4">         <span class="dt">estimate =</span> <span class="kw">round</span>(estimate, <span class="dv">2</span>)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb66-5" title="5"><span class="st">  </span><span class="kw">select</span>(term, estimate, odds_ratio, p.value) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb66-6" title="6"><span class="st">  </span><span class="kw">arrange</span>(<span class="op">-</span>estimate) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb66-7" title="7"><span class="st">  </span><span class="kw">filter</span>(p.value <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.05</span>)</a></code></pre></div>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["term"],"name":[1],"type":["chr"],"align":["left"]},{"label":["odds_ratio"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["p.value"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"BusinessTravelTravel_Frequently","2":"8.07","3":"0.00"},{"1":"OverTimeYes","2":"4.37","3":"0.00"},{"1":"BusinessTravelTravel_Rarely","2":"3.83","3":"0.00"},{"1":"MaritalStatusSingle","2":"3.34","3":"0.00"},{"1":"(Intercept)","2":"2.70","3":"0.18"},{"1":"MaritalStatusMarried","2":"2.00","3":"0.00"},{"1":"PerformanceRating","2":"1.91","3":"0.01"},{"1":"JobLevel","2":"1.58","3":"0.01"},{"1":"GenderMale","2":"1.49","3":"0.00"},{"1":"YearsSinceLastPromotion","2":"1.19","3":"0.00"},{"1":"NumCompaniesWorked","2":"1.16","3":"0.00"},{"1":"YearsAtCompany","2":"1.07","3":"0.00"},{"1":"DistanceFromHome","2":"1.03","3":"0.00"},{"1":"DailyRate","2":"1.00","3":"0.05"},{"1":"MonthlyIncome","2":"1.00","3":"0.00"},{"1":"PercentSalaryHike","2":"0.96","3":"0.07"},{"1":"TotalWorkingYears","2":"0.91","3":"0.00"},{"1":"YearsWithCurrManager","2":"0.91","3":"0.00"},{"1":"YearsInCurrentRole","2":"0.90","3":"0.00"},{"1":"WorkLifeBalance","2":"0.83","3":"0.01"},{"1":"TrainingTimesLastYear","2":"0.81","3":"0.00"},{"1":"JobSatisfaction","2":"0.70","3":"0.00"},{"1":"EnvironmentSatisfaction","2":"0.62","3":"0.00"},{"1":"JobInvolvement","2":"0.53","3":"0.00"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["term"],"name":[1],"type":["chr"],"align":["left"]},{"label":["estimate"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["odds_ratio"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["p.value"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"BusinessTravelTravel_Frequently","2":"2.09","3":"8.07","4":"0.00"},{"1":"OverTimeYes","2":"1.47","3":"4.37","4":"0.00"},{"1":"BusinessTravelTravel_Rarely","2":"1.34","3":"3.83","4":"0.00"},{"1":"MaritalStatusSingle","2":"1.21","3":"3.34","4":"0.00"},{"1":"MaritalStatusMarried","2":"0.69","3":"2.00","4":"0.00"},{"1":"PerformanceRating","2":"0.65","3":"1.91","4":"0.01"},{"1":"JobLevel","2":"0.46","3":"1.58","4":"0.01"},{"1":"GenderMale","2":"0.40","3":"1.49","4":"0.00"},{"1":"YearsSinceLastPromotion","2":"0.18","3":"1.19","4":"0.00"},{"1":"NumCompaniesWorked","2":"0.15","3":"1.16","4":"0.00"},{"1":"YearsAtCompany","2":"0.07","3":"1.07","4":"0.00"},{"1":"DistanceFromHome","2":"0.03","3":"1.03","4":"0.00"},{"1":"MonthlyIncome","2":"0.00","3":"1.00","4":"0.00"},{"1":"YearsWithCurrManager","2":"-0.09","3":"0.91","4":"0.00"},{"1":"TotalWorkingYears","2":"-0.10","3":"0.91","4":"0.00"},{"1":"YearsInCurrentRole","2":"-0.10","3":"0.90","4":"0.00"},{"1":"WorkLifeBalance","2":"-0.19","3":"0.83","4":"0.01"},{"1":"TrainingTimesLastYear","2":"-0.22","3":"0.81","4":"0.00"},{"1":"JobSatisfaction","2":"-0.35","3":"0.70","4":"0.00"},{"1":"EnvironmentSatisfaction","2":"-0.47","3":"0.62","4":"0.00"},{"1":"JobInvolvement","2":"-0.63","3":"0.53","4":"0.00"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <p>Here are a quick summary of the table above:</p>
 <ol style="list-style-type: decimal">
-<li>Business Travel Frequently and Business Travel Rarely have a positive coefficient, so if the Employee is traveling for business more likely to leave the company than the employee who non-traveling.</li>
-<li>Overtime have a positive coefficient and the odds ratio yes to no is 5,45, which is to say that the odds for employee who working overtime will leave the company are about 445% more than that of their who not working overtime.</li>
-<li>The variables are linked (directly or indirectly) to work-life-balance (Job Satisfaction, Environment Satisfaction, Job Involvement, ) have a negative coefficient, and of course the odds ratio will be less than one. We can say that the more satisfied and the higher job involvement the employee, the less likely that employees will leave the company.</li>
+<li>Overtime has a positive coefficient with the odds ratio yes to no is 5.32. This says that the event of an employee who works overtime and leaves the company is about 5.32 more likely than the employee who is not working overtime</li>
+<li>The variables are linked (directly or indirectly) to work-life-balance (Job Satisfaction, Environment Satisfaction, Job Involvement, ) have a negative coefficient. We can say that the more satisfied and the higher job involvement the employee, the less likely that employees will leave the company.</li>
 </ol>
 </div>
 <div id="predicting" class="section level3">
-<h3><span class="header-section-number">2.3.3</span> Predicting</h3>
-<p>To test whether our model has a good performance, it will be seen whether our model can be good enough in classifying the <em>Attrition</em> status in the unseen data.</p>
+<h3><span class="header-section-number">2.2.3</span> Predicting</h3>
+<p>To test whether our model has a good performance, we can check the number of correctly classified/misclassified Attrition status in the unseen data.</p>
 <div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb67-1" title="1">prob_logit &lt;-<span class="st"> </span><span class="kw">predict</span>(stepmodel_logit, <span class="dt">newdata =</span> test, <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>)</a>
 <a class="sourceLine" id="cb67-2" title="2">pred_logit &lt;-<span class="st"> </span><span class="kw">ifelse</span>(prob_logit <span class="op">&gt;</span><span class="st"> </span><span class="fl">0.5</span>, <span class="st">&quot;Yes&quot;</span>, <span class="st">&quot;No&quot;</span>)</a></code></pre></div>
 <div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb68-1" title="1">pred_logit &lt;-<span class="st"> </span><span class="kw">as.factor</span>(pred_logit)</a></code></pre></div>
@@ -3184,31 +3185,31 @@ div.tocify {
 </div>
 </div>
 <div id="convert-statistical-object-like-easystats-style" class="section level2">
-<h2><span class="header-section-number">2.4</span> Convert statistical object like <code>easystats</code> style</h2>
-<p><code>easystats</code> is a development packages in R to provide a unifying and consistent framework to tame and harness the scary of R statistical models. We can automate convert an object of R from simple statistical model into textual report that ease our our daily working in making interpretation from the data.</p>
+<h2><span class="header-section-number">2.3</span> Convert Statistical Object Like <code>easystats</code> Style</h2>
+<p><code>easystats</code> is a development packages in R to provide a unifying and consistent framework to tame and harness the scary of R statistical models. We can automate convert an object of R from simple statistical model into textual report that ease our daily works in making interpretation of the data.</p>
 <div id="correlation-test" class="section level3">
-<h3><span class="header-section-number">2.4.1</span> Correlation test</h3>
+<h3><span class="header-section-number">2.3.1</span> Correlation Test</h3>
 <div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb71-1" title="1">get_narative_cor &lt;-<span class="st"> </span><span class="cf">function</span>(x, y, xname, yname){</a>
 <a class="sourceLine" id="cb71-2" title="2">  </a>
 <a class="sourceLine" id="cb71-3" title="3">  temp &lt;-<span class="st"> </span><span class="kw">cor.test</span>(x, y)</a>
 <a class="sourceLine" id="cb71-4" title="4">  <span class="kw">paste0</span>(</a>
 <a class="sourceLine" id="cb71-5" title="5">    <span class="st">&quot;The Pearson&#39;s product-moment correlation between &quot;</span>,</a>
 <a class="sourceLine" id="cb71-6" title="6">    xname, </a>
-<a class="sourceLine" id="cb71-7" title="7">    <span class="st">&quot;and &quot;</span>, </a>
+<a class="sourceLine" id="cb71-7" title="7">    <span class="st">&quot; and &quot;</span>, </a>
 <a class="sourceLine" id="cb71-8" title="8">    yname, </a>
 <a class="sourceLine" id="cb71-9" title="9">    <span class="st">&quot; is &quot;</span>, </a>
 <a class="sourceLine" id="cb71-10" title="10">    <span class="kw">ifelse</span>(temp<span class="op">$</span>estimate <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>, <span class="st">&quot;positive &quot;</span>, <span class="st">&quot;negative &quot;</span>), </a>
-<a class="sourceLine" id="cb71-11" title="11">    <span class="kw">ifelse</span>(temp<span class="op">$</span>p.value <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.05</span>, <span class="st">&quot;significant as a statistics&quot;</span>, <span class="st">&quot;but not significant enough&quot;</span>), </a>
+<a class="sourceLine" id="cb71-11" title="11">    <span class="kw">ifelse</span>(temp<span class="op">$</span>p.value <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.05</span>, <span class="st">&quot;significant&quot;</span>, <span class="st">&quot;but not significant enough&quot;</span>), </a>
 <a class="sourceLine" id="cb71-12" title="12">    <span class="st">&quot; with a value &quot;</span>, </a>
 <a class="sourceLine" id="cb71-13" title="13">    <span class="kw">round</span>(temp<span class="op">$</span>estimate, <span class="dt">digits =</span> <span class="dv">2</span>)</a>
 <a class="sourceLine" id="cb71-14" title="14">  )</a>
 <a class="sourceLine" id="cb71-15" title="15">  </a>
 <a class="sourceLine" id="cb71-16" title="16">}</a></code></pre></div>
 <div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb72-1" title="1">narativecor &lt;-<span class="st"> </span><span class="kw">get_narative_cor</span>(<span class="dt">x =</span> employee<span class="op">$</span>YearsAtCompany, employee<span class="op">$</span>MonthlyIncome, <span class="dt">xname =</span> <span class="st">&quot;Years at Company&quot;</span>, <span class="dt">yname =</span> <span class="st">&quot;Monthly Income&quot;</span>)</a></code></pre></div>
-<p>The Pearson’s product-moment correlation between Years at Companyand Monthly Income is positive significant as a statistics with a value 0.54</p>
+<p>The Pearson’s product-moment correlation between Years at Company and Monthly Income is positive significant with a value 0.54</p>
 </div>
 <div id="print-all-parameter-from-model" class="section level3">
-<h3><span class="header-section-number">2.4.2</span> Print all parameter from Model</h3>
+<h3><span class="header-section-number">2.3.2</span> Print All Parameter from Model</h3>
 <div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb73-1" title="1">get_narative_model &lt;-<span class="st"> </span><span class="cf">function</span>(model, target){</a>
 <a class="sourceLine" id="cb73-2" title="2"></a>
 <a class="sourceLine" id="cb73-3" title="3"></a>

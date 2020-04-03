@@ -1,0 +1,516 @@
+---
+title: "Statistical Report"
+author: "Team Algoritma"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 4
+    toc_float: 
+      collapsed: false
+    df_print: paged
+    highlight: breezedark
+    theme: united
+    number_section: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+
+```{r}
+library(tidyverse)
+library(rsample)
+library(caret)
+```
+
+
+In general statistics reports, there are 2 main parts, descriptive statistics and inferential statistics (analysis test). To provide you how to create a statistical analysis report, we will divide some of the content into:
+
+* **Statistical Descriptive**
+
+  * Measure of Central Tendency
+  * Measure of Spread
+  * Measure of Relationship between data
+
+* **Statistical Inferencial: Statistics Model Focused**
+
+  * Motivation and Definition "Machine learning"
+  * Employee Attrition Analysis
+  * How to interpret analysis result
+  * Convert statistical object into textual report with easystat's style
+
+# Statistical Descriptive
+
+Statisticians and data scientists use descriptive statistics to summarize and describe a large number of measurements. Many times, this task is accompanied with graphs and plots that help describe the numerical summary of data. When data science is applied in the business context, an example of descriptive statistic is the average number of transactions per month. Another example is the percentage of e-commerce transactions with a voucher code applied. The simple rule is that descriptive statistics do not involve generalizing beyond the data we have obtained, and are merely descriptive of what we have at hand.
+
+## Measure of Central Tendency
+
+The measure of central tendency enable us to compare two or more distribution pertaining to the same time period or within the same distribution over time. 
+
+```{r}
+attrition <- read.csv("data_input/data-attrition.csv")
+```
+
+```{r}
+head(attrition)
+```
+
+
+### Mean
+
+Often times in the exploratory data analysis phase, we want to get a sense of what the *most representative score* of a particular measurement is. We often simplify this idea by referring to it as the “average”, but there are in fact, three measures of central tendency that you need to have in your statistical toolset.
+
+The most popular measure of central tendency is the mean, which is sometimes represented as $\bar x$ when computed on a *sample* and represented as $\mu$ when computed on a population. Mean is really the sum of all your measurements, divided by the number of measurements, and works best on data that has an even distribution or a normal distribution (don’t worry if the idea of a normal distribution isn’t clear - we’ll get to that in a while!). In R, the `mean` function will return the mean:
+
+```{r}
+sum(attrition$monthly_income)/length(attrition$monthly_income)
+```
+
+
+```{r}
+mean(attrition$monthly_income)
+```
+
+Mean is based on all the items in a series, a change in the value of any item will lead to a change in the value of the mean. So in the case of highly skewed distribution, the mean may get distorted on account of a few items with extreme values. In such a case, it may not appropriate for represent the characteristics of the distribution.
+
+### Median
+
+The median is the point of value that cuts the distribution into two equal halves such that 50% of the observations are below it. To find this value, we would order the observations and find the middle value that separates the distribution into two equal halves.
+
+```{r}
+median(attrition$monthly_income)
+```
+
+We need to be cautious when applying the mean on data with a skewed distribution because the mean may not be the best candidate for a most representative score compared to other measures of central tendency. For example, a company surveys its employees household income and posted the following monthly household income (IDR, in Mil):
+
+```{r}
+salary <- c(7.8, 7.5, 6, 7.5, 4.5, 105, 45, 7.5, 5.5, 4)
+mean(salary)
+```
+
+```{r}
+median(salary)
+```
+
+While the median puts that figure at about 7.25, the mean is about 2.67 times higher and is not truly representative of the actual household income. While most of the employees have a combined household earning of less than 8 mil, the mean value of our household income would have believe that the average household income of our employees is in fact more than 20 mil IDR.
+
+The median in this case is a better measure of centrality because it is not sensitive to the outlier data.
+
+If we are in fact, *required* to compute the mean on data with skewed distribution, another technique to reduce the influence of outlier data is to use a slight variation of the mean, called the Trimmed Mean. The trimmed mean removes a small designated percentage of the largest and smallest values before computing the mean. A trimmed mean that computes the middle 95% of the distribution can be performed in R fairly easily:
+
+```{r}
+# 5% of observations to be trimmed
+mean(salary, trim = 0.2)
+```
+
+### Mode
+
+When there are discreet values for a variable, the mode refers to the value that occurs most frequently. This statistic is rarely used in practice
+
+```{r}
+most <- function(x){
+  names(sort(-table(x)))[1]
+}
+
+most(attrition$education_field)
+```
+
+Because R do not have a built-in way of computing the mode, we wrote the code above to tabulate our data (using `table`), multiply the calculation by -1 (and hence giving it the effect of sorting our data in descending order) and then pick the first value.
+
+*Dive Deeper*
+
+The following data give the savings bank accounts balances of nine sample household selected in a survey. 
+
+```{r}
+savings <- c(745, 2000, 1500, 68000, 461, 549, 3750, 1800, 4795)
+```
+
+1. Find the mean and the median for these data
+2. Do these data contain an outlier? if so, what we can do to dealing with extreme number?
+3. Which of these two summary measures is more appropirate for this series?
+
+## Measures of Spread
+
+In the previous chapter, we have explained the measures of central tendency. It may be noted that these measures do not indicate the extent of dispersion or variability in a distribution. Measures of spread measures the extent to which **value in a distribution differ from each other**. In practice, it is far easier to compute the distance between the values to their mean and when we square each one of these distances and add them all up the average1 of that result is known as **variance**. Taking the square root of the variance will result in the **standard deviation**. Just like the mean, standard deviation is the “expected value” of how far the scores deviate from the mean.
+
+### Variance
+
+```{r}
+hourly_rate <- attrition$hourly_rate
+sum((hourly_rate - mean(hourly_rate))^2)/(length(hourly_rate) - 1)
+```
+
+```{r}
+var(hourly_rate)
+```
+
+### Standard Deviation
+
+And taking the square root of variance yields the standard deviation:
+
+```{r}
+sqrt(var(hourly_rate))
+```
+
+```{r}
+sd(hourly_rate)
+```
+
+Variance and standard deviation are always positive when the values are not identical. When there’s no variability, the variance is 0. Because variance and standard deviation are sensitive to every value, they may not be the most “representative” measurement for skewed data.
+
+### Range
+
+Other measurements of the spread are the **range** and the **interquartile range** The range is the distance from our smallest measurement to the largest one:
+
+```{r}
+max(hourly_rate) - min(hourly_rate)
+```
+
+```{r}
+diff(range(hourly_rate))
+```
+
+### IQR
+
+The interquartile range is the range computed for the middle 50% of the distribution:
+
+```{r}
+IQR(hourly_rate)
+```
+
+```{r}
+as.numeric(quantile(hourly_rate, 0.75) - quantile(hourly_rate, 0.25))
+```
+
+While we can use `quantile()` to obtain the 3rd and 1st quartile individually, these two figures are also presented together with the 0th (the `min()`), 50th (the `median()`), and the 100th (the `max()`) quartiles: together they are called the five-number summary.
+
+When we call `fivenum()`, we get this summary that we can use as a measure of variation for even potentially skewed data:
+
+```{r}
+fivenum(attrition$hourly_rate)
+```
+
+From the above, observe that the absolute lowest profit (the `min`) approximates 6,600 and the highest profit approximates 8,400 (the `max`); Observe also that 25% of our transactions make a profit of less than 1.728. Half of the transactions (the middle 50% of the value) make a profit between 1.728 and 29.364 - recall that this range is called the *interquartile range* (IQR). When we use `summary()` on continuous data, we’ll get the five number summary and the mean in return:
+
+```{r}
+summary(attrition$hourly_rate)
+```
+
+### Uses of the measure of spread
+
+Discussion: 
+
+- In a small business firm, two typist of employed. Typist A and typist B. Here is the data number of typed pages from both typist in 10 days. Which typist shows greater consistency in his output?
+
+```{r}
+typist_a <- c(28.1, 30.4, 34.2, 30.2, 32.2, 34.7, 32.9, 29.9, 33.7, 39.1)
+typist_b <- c(72.2, 48.0, 50.4, 32.2, 40.6, 59.7, 63.6, 31.2, 49.6, 31.0)
+```
+
+Solution: 
+
+```{r}
+paste("mean typist A:", mean(typist_a))
+paste("mean typist B:", mean(typist_b))
+```
+
+```{r}
+paste("Standard Deviation typist A:", round(var(typist_a), digits = 2))
+paste("Standard Deviation typist B:", round(var(typist_b), digits = 2))
+```
+
+These calculation indicate that althoufh typist B types out more pages on average (47.85 per a day), there is a greater variation in his output as compared to that of typist A. We can say this in a different way: Though typist A's daily output is much less, he is more consistent than typist B. 
+
+Discussion 2:
+
+Which financial assets has more votality in their annual price?
+
+```{r}
+price.coins <- c(1.4, 0.4, 0.8, 1.1, 1.8, 2.2, 2.3, 1.2)
+price.oil <- c(1.6, 1.2, 1.9, 0.8, 0.6, 1.5, 2.1, 1.5)
+```
+
+The primary measure of votality used by stock traders and financial analysts is standard deviation, and recall that this metric reflects the average amount of an item’s price over a period of time. While the price for our fictional “oil” asset and “coins” asset averaged out to be USD 1.4 over time, which of these two present a higher votality than the other?
+
+## Covariance and Correlation
+
+Statistical methods of measures of central tendency, measure of spread are helpful for the purpose of comparison and analysis of distribution involving only one variable. However, decribing the relationship between two or more variables, is another important part of statistics. In many business research situations, the key of to decision making lies in understanding relationship between two or more variables. The statistical methods of *Covariance* and *Correlation* are helpful in knowing the relationship between two or more vairbles.
+
+In all these cases involving two or more variables, we may be interested in seeing:
+  - if there is any association between the variables;
+  - if there is an association, is it strong enough to be useful;
+  - if so, what form the relationship between the two variables takes
+  
+### Covariance
+
+When we have two samples, X and Y, of the same size, then the covariance is an estimate of how variation in X is related to the variation in Y. Covariance measures how two variables covary and is represented as:
+
+$$Cov(X,Y) = \frac{1}{n-1}\sum_{i = 1}^{i}(X_i - \mu x)(Y_i - \mu y)$$
+
+```{r}
+years_at_company <- attrition$years_at_company
+monthly_income <- attrition$monthly_income
+```
+
+
+```{r}
+sum((years_at_company - mean(years_at_company))*(monthly_income - mean(monthly_income)))/(length(monthly_income)-1)
+```
+
+```{r}
+cor(years_at_company, monthly_income)
+```
+
+Getting a positive covariance means that higher X tends to be associated with larger Y (and vice versa). The covariance of any variable with itself is its variance. Notice also that cov(X,Y) = cov(Y,X). Notice also that cov(X,Y) = cov(Y,X).
+
+```{r}
+cov(years_at_company, years_at_company)
+```
+
+```{r}
+var(years_at_company)
+```
+
+But there is a problem with covariances: they are hard to compare because variables are sometimes expressed in different units or scales. It is hard to tell if there is an “objectively stronger” variance between UK Pound and Indonesia Rupiah or bitcoin prices and the US dollar because the “scale” at which we measure and compute the covariance on is different.
+
+One solution is to “normalize” the covariance: we divide the covariance by something that encapsulate the scale in both the covariates, leading us up to a value that is bounded to the range of -1 and +1. This is the **correlation**. 
+
+### Correlation
+
+Whatever units our original variables were in, this transformation will get us a measurement that allow us to compare whether two variables exhibit a correlation stronger than another:
+
+$$Corr(X,Y) = \frac{Cov(X,Y)}{\sqrt{Var(X)*Var(Y)}}$$
+
+```{r}
+cov(years_at_company, monthly_income) / sqrt(var(years_at_company)*var(monthly_income))
+```
+
+
+And to find the correlation instead of the covariance, we would just use cor() instead. Correlation, unlike covariance, is not sensitive to the units in which our variables X and Y are measured and hence more useful for determining how strong the relationship is between variables:
+
+```{r}
+cor(years_at_company, monthly_income)
+```
+
+Some facts about correlation:
+
+- $Cor(X,Y) == Cor(Y,X)$
+- $-1 <= Cor(X,Y) <= 1$
+- Cor(X,Y) is 1 or -1 only when the X and Y observations fall perfectly on a positive or negatively sloped line
+- Cor(X,Y) = 0 implies no linear relationship
+
+*Discussion:*
+
+We can think of X and Y as the returns of two stocks (both stocks have a return, which is basically how much money they’re expected to make, and both have risks, which measure how much the return fluctuates; this is an example that [Mike Parzen](http://www.people.fas.harvard.edu/~mparzen/), from the Harvard Statistics Department, often uses in his courses to build intuition). In the Statistics ‘world’, it’s pretty much the norm to think of return as the average, or expectation, of a stock, and risk as the variance. So, say that you were building a portfolio (a compilation of multiple stocks) and wanted to find the risk and return of the entire portfolio.
+
+We could break this down into the ‘individual risks’ of the stocks - the separate Variances Var(A), Var(B), Var(C), etc - and the ‘interactive’ risks of them together - the Covariance term. The individual risk is straightforward enough (just the marginal variance of each stock), but think more about the interactive risks. *If two stocks tend to move together, then they are certainly riskier*. Finally, given the value of covariance and the correlation between the two stocks, we are more likely to choose 2 stocks that do not have a correlation (0) which means reducing the risk 2 stocks decrease simultaneously.
+
+# Statistics Model
+
+## Motivation and Definition "Machine Learning"
+
+Machine learning  on a very basic level, refers to a subfield of computer science that “gives computer the ability to learn without being explicitly programmed”, this realization and quote was credited to Arthur Samuel, who coined the term “machine learning” and created the world’s first self-learning program called the Samuel Checkers-playing Program in 1952. When Samuel was about to demonstrate the program, the founder and president of IBM remarked that the demonstration would raise the price of IBM stock by 15 points. It did. In 1961 Samuel challenged the Connecticut state checker champion (4th ranked nationwide) and his program won.
+
+With the advances in machine learning, society as a collective has pushed new boundaries around making machines “smarter”, or less-sensationally, making machines more able to perform tasks without human intervention. The whole notion of making machines perform these tasks that, for a long time in history were done by human brains, is what most people meant when they say “Artificial intelligence”. Compared to machine learning, AI describes a broad concept (“ideal”). Machine learning on the other hand, offers a particular approach to arriving at that “ideal”.
+
+
+## Understanding Supervised and Unsupervised
+
+An important categorization in machine learning literature is to identify algorithms by the “signal” we made available to a model.
+
+Supervised Machine Learning currently makes up most of the ML that is being used by systems across the world. The input variable (x) is used to connect with the output variable (y) through the use of an algorithm. All of the input, the output, the algorithm, and the scenario are being provided by humans.
+
+> Supervised learning: We feed our model training examples (input) and tag each of these example with a corresponding target, and is so doing, allow our model to produce a function that maps our input to its target.
+
+Supervised learning algorithms are used to solve for classification and regression problems. Good examples for the financial industry are credit risk scoring (regression or classification), loan default prediction (classification), and customer lifetime value (regression).
+
+> Unsupervised learning: If we feed our model training examples (input) without any labels, it is unsupervised learning.
+
+Good examples of unsupervised learning problems in the finance / banking sector include anomaly detection (there is no target variables in anomaly detection, there is not even necessarily any right or wrong answer as to when an observation is an anomaly and how many anomaly exist in our data) and auto segmentation (again, no right or wrong answers as to how many clusters of customer segments is the right amount).
+
+Which of the following do you think is a supervised learning problem?
+
+* Training an email spam filter
+* Find possible patterns from a group of 5000 financial transactions
+* Discover how many market segments can be drawn from a CRM (customer relationship system)
+* Categorizing transactions into high / medium / low risk - Classifying blood cell as benign * or malign
+
+## Employee Retention Analysis
+
+The objective is to understand what factors contributed most to employee attrition and to create a model that can predict if a certain employee will leave the company or not. The goal also includes helping in formulating different retention strategies on targeted employees. Overall, the implementation of this model will allow management to create better decision-making actions.
+
+Let’s import our data and inspect our variable;
+
+```{r}
+employee <- read.csv("data_input/HR-Employee-Attrition.csv")
+```
+
+```{r}
+glimpse(employee)
+```
+
+
+The data we’ve prepared is originally made available in kaggle by lnvardanyan : [ibm-hr-analytics-attrition-dataset](https://www.kaggle.com/pavansubhasht/ibm-hr-analytics-attrition-dataset). The following are the description of some features:
+
+* EnvironmentSatisfaction: 1 Low, 2 Medium, 3 High, 4 Very High
+* JobInvolvement: 1 Low, 2 Medium, 3 High, 4 Very High
+* JobSatisfaction: 1 Low, 2 Medium, 3 High, 4 Very High
+* PerformanceRating: 1 Low, 2 Good, 3 Excellent, 4 Outstanding
+* RelationshipSatisfaction: 1 Low, 2 Medium, 3 High, 4 Very High
+* WorkLifeBalance: 1 Bad, 2 Good, 3 Better, 4 Best.
+
+
+```{r echo=FALSE}
+set.seed(47)
+splitted <- initial_split(data = employee, prop = 0.8, strata = "Attrition")
+train <- training(splitted)
+test <- testing(splitted)
+
+set.seed(47)
+train <- upSample(x = select(train, -Attrition),
+                  y = train$Attrition, 
+                  yname = "Attrition")
+
+```
+
+### Modeling Logistic Regression
+
+In logistic regression, we can use `stepwise` too for the non-business wise feature selection.
+
+```{r}
+model_logit <- glm(formula = Attrition ~., 
+                   data = train, 
+                   family = "binomial")
+
+stepmodel_logit <- step(model_logit, direction = "backward", trace = FALSE)
+
+
+tidy(stepmodel_logit)
+```
+
+### Model Interpretation
+
+Using the model we have built with stepwise regression, we can create a likelihood table and analyze the contribution of each variable in determining probability. For example, let’s take a coefficient value from a numerical variable:
+
+Based on model summary we get information the coefficient (see estimate column) for Age is -0.0187. This negtive coefficient can be interpreted as:
+
+> The older the employee, the smaller chance to leave. 
+
+```{r}
+tidy(stepmodel_logit) %>% 
+  mutate(odds_ratio = round(exp(estimate),2),
+         p.value = round(p.value, 2)) %>% 
+  select(term, odds_ratio, p.value) %>% 
+  arrange(-odds_ratio)
+```
+
+Here are a quick summary of the table above:
+
+1. Business Travel Frequently and Business Travel Rarely have a positive coefficient, so if the Employee is traveling for business more likely to leave the company than the employee who non-traveling.
+2. Overtime have a positive coefficient and the odds ratio yes to no is 5,45, which is to say that the odds for employee who working overtime will leave the company are about 445% more than that of their who not working overtime.
+3. The variables are linked (directly or indirectly) to work-life-balance (Job Satisfaction, Environment Satisfaction, Job Involvement, ) have a negative coefficient, and of course the odds ratio will be less than one. We can say that the more satisfied and the higher job involvement the employee, the less likely that employees will leave the company.
+
+### Predicting
+
+To test whether our model has a good performance, it will be seen whether our model can be good enough in classifying the *Attrition* status in the unseen data.
+
+```{r}
+prob_logit <- predict(stepmodel_logit, newdata = test, type = "response")
+pred_logit <- ifelse(prob_logit > 0.5, "Yes", "No")
+```
+
+```{r}
+pred_logit <- as.factor(pred_logit)
+```
+
+```{r}
+table("prediction" = pred_logit, "actual" = test$Attrition)
+```
+
+This table above is also known as the confusion matrix.
+
+Observe from the confusion matrix that:
+
+* Out of the 73 actual employee leave we classified 52 of them correctly
+* Out of the 246 employee that stay we classified 184 of them correctly
+* Out of the 319 cases of attrition in our test set, we classified 236 of them correctly
+
+## Convert statistical object like `easystats` style
+
+`easystats` is a development packages in R to provide a unifying and consistent framework to tame and harness the scary of R statistical models. We can automate convert an object of R from simple statistical model into textual report that ease our our daily working in making interpretation from the data.
+
+### Correlation test
+
+```{r}
+get_narative_cor <- function(x, y, xname, yname){
+  
+  temp <- cor.test(x, y)
+  paste0(
+    "The Pearson's product-moment correlation between ",
+    xname, 
+    "and ", 
+    yname, 
+    " is ", 
+    ifelse(temp$estimate > 0, "positive ", "negative "), 
+    ifelse(temp$p.value < 0.05, "significant as a statistics", "but not significant enough"), 
+    " with a value ", 
+    round(temp$estimate, digits = 2)
+  )
+  
+}
+```
+
+```{r}
+narativecor <- get_narative_cor(x = employee$YearsAtCompany, employee$MonthlyIncome, xname = "Years at Company", yname = "Monthly Income")
+```
+
+`r narativecor`
+
+### Print all parameter from Model
+
+```{r}
+get_narative_model <- function(model, target){
+
+
+tidy_estimate <- tidy(model) %>% 
+  mutate(term = gsub(term, pattern = "([[:upper:]])", replacement = ' \\1') %>% 
+           str_remove(pattern = "[[:punct:]]") %>% 
+           str_squish())
+
+text <- paste0(
+  "We fitted a logistic regression to predict ", 
+  target, 
+  ".",
+  "",
+  " The model Intercepet is at ", 
+  round(tidy_estimate$estimate[1], digits = 2),
+  ". Within this model: <br>"
+)
+
+for (i in 2:nrow(tidy_estimate)) {
+
+  text[i] <- paste0(
+    i-1,
+    ". The effect of ", 
+    tidy_estimate$term[i], 
+    " is ", 
+    ifelse(tidy_estimate$estimate[i] > 0, "positive", "negative"), 
+    " with value: ", 
+    round(tidy_estimate$estimate[i], digits = 2), 
+    "<br>"
+  ) 
+}
+ 
+return(text)
+ 
+}
+
+narativemodel <- get_narative_model(model = stepmodel_logit, target = "Attrition Status")
+```
+
+`r narativemodel %>% str_remove_all(pattern = ",")`

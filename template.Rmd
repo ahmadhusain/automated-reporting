@@ -2,8 +2,16 @@
 title: "report2"
 author: "Team Algoritma"
 params:
-  gender: NA
+  gender: female
 ---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE
+)
+```
 
 # The Main Problem
 
@@ -18,24 +26,21 @@ library(glue)
 library(ggplot2)
 ```
 
-
 ```{r}
-data_attrition <- read.csv("../data_input/data-attrition.csv") %>% 
-  filter(gender == params$gender)
+data_attrition <- read.csv("../data_input/data-attrition.csv")
 ```
 
 ```{r}
 # aggregation
 data_agg <- data_attrition %>% 
   group_by(department, attrition) %>% 
-  dplyr::summarise(freq = n()) %>% 
+  summarise(freq = n()) %>% 
   ungroup()
 
 # print some examples
 head(data_agg)
 ```
-
-
+  
 ```{r}
 # prepare visualization data
 data_viz <- data_agg %>% 
@@ -62,11 +67,13 @@ data_agg <- data_attrition %>%
 head(data_agg)
 ```
 
+
 ```{r}
 # prepare visualization data
+
 data_viz <- data_agg %>% 
   mutate(
-    education_field = education_field %>%
+     education_field = education_field %>%
       str_replace_all("_", " ") %>% 
       str_to_title(),
     education_field = reorder(education_field, -n),
@@ -74,25 +81,33 @@ data_viz <- data_agg %>%
     label = glue("{n} ({n_percent})")
   )
 
-# visualize
-ggplot(data_viz, aes(x = education_field, y = n)) +
-  geom_col(aes(fill = n)) +
-  geom_text(aes(y = n + max(n) * 0.075, label = label)) +
-  scale_y_continuous(expand = expand_scale(mult = c(0, 0.1))) +
-  guides(fill = FALSE) +
-  labs(
-    title = "Number of employee",
-    subtitle = "reported from a batch of employee by education fields",
-    caption = "Source: IBM Watson",
-    x = NULL,
-    y = NULL
-  ) +
-  theme_minimal()
+highest_edu <- data_viz %>% 
+  arrange(desc(n)) %>% 
+  slice(1) %>% 
+  pull(education_field) %>% 
+  as.character()
+
+lowest_edu <- data_viz %>% 
+  arrange(n) %>% 
+  slice(1) %>% 
+  pull(education_field) %>% 
+  as.character()
 ```
 
-Our plot is a very prominent example for that: we could already see which education_field is the highest or the lowest, and we could also see the big picture regarding the ranking in terms of number of employee.
 
-For example, let’s try the same visualization, but now using job_role as our categorical variable:
+```{r}
+barplot_report(
+  data = data_viz,
+  xname = "education_field",
+  title = "Number of employee", 
+  sub = "reported from a batch of employee by education fields"
+)
+```
+
+
+We could already see which education field is the highest (`r highest_edu`) or the lowest (`r lowest_edu`), and we could also see the big picture regarding the ranking in terms of number of employee.
+
+For example, let’s try the same visualization, but now using job role as our categorical variable:
 
 ```{r}
 # aggregation
@@ -116,27 +131,19 @@ data_viz <- data_agg %>%
     n_percent = percent(n / sum(n)),
     label = glue("{n} ({n_percent})")
   )
-
-# visualize
-ggplot(data_viz, aes(x = job_role, y = n)) +
-  geom_col(aes(fill = n)) +
-  geom_text(aes(y = n + max(n) * 0.125, label = label)) +
-  scale_y_continuous(expand = expand_scale(mult = c(0, 0.1))) +
-  guides(fill = FALSE) +
-  coord_flip() +
-  labs(
-    title = "Number of employee",
-    subtitle = "reported from a batch of employee by job roles",
-    caption = "Source: IBM Watson",
-    x = NULL,
-    y = NULL
-  ) +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(hjust = -0.45),
-    plot.subtitle = element_text(hjust = -0.725)
-  )
 ```
+
+
+```{r}
+barplot_report(
+  data = data_viz, 
+  xname = "job_role",
+  title = "Number of Employee",
+  sub = "Reported from a batch of employee by job roles",
+  caption = "Source: IBM Watson"
+)
+```
+
 
 visualizing a categorical ranking could help us gaining some insight. But, oftenly, we need to make some breaking down to the ranking in order to gain more insight.
 
@@ -168,7 +175,7 @@ data_viz <- data_agg %>%
 
 # visualize
 ggplot(data_viz, aes(x = job_role, y = n)) +
-  geom_col(aes(fill = attrition), position = "stack") +
+  geom_col(aes(fill = attrition), position = "fill") +
   scale_y_continuous(expand = expand_scale(mult = c(0, 0.1))) +
   coord_flip() +
   labs(
@@ -187,45 +194,29 @@ ggplot(data_viz, aes(x = job_role, y = n)) +
 
 ```
 
-This bar plot variation is called stacked bar plot. It help us to see the ranking in general, while also see the share of some more categorical variable inside each levels. For example, even though we still see the original ranking as usual, now we gain the insight that Sales Representative department have the highest proportion of attrition relative to the number of employee inside that department. A very crucial finding for this context.
+```{r}
+high_prop <- data_viz %>% 
+  group_by(job_role) %>% 
+  mutate(prop_attrition = n/sum(n)) %>% 
+  ungroup() %>% 
+  filter(attrition == "Yes") %>% 
+  arrange(desc(prop_attrition)) %>% 
+  slice(1) %>% 
+  pull(job_role) %>% 
+  as.character()
+```
+
+This bar plot variation is called stacked bar plot. It help us to see the ranking in general, while also see the share of some more categorical variable inside each levels. For example, even though we still see the original ranking as usual, now we gain the insight that **`r high_prop`** department have the highest proportion of attrition relative to the number of employee inside that department. A very crucial finding for this context.
+
+
 
 ## Numerical Value
 
-```{r}
-ggplot(data_attrition, aes(x = monthly_income)) +
-  geom_histogram(fill = "red",bins = 30, colour = "black") +
-  scale_x_continuous(
-    expand = expand_scale(mult = c(0.05, 0.05)),
-    labels = dollar_format(scale = 1e-3, suffix = "K")
-  ) +
-  scale_y_continuous(expand = expand_scale(mult = c(0, 0.1))) +
-  labs(
-    title = "Number of employee by monthly income distribution",
-    subtitle = "count value calculated using 30 bins",
-    caption = "Source: IBM Watson",
-    x = NULL,
-    y = NULL
-  )
-```
 
 ```{r}
-# visualize
-ggplot(data_attrition, aes(x = monthly_income)) +
-  geom_density(fill = "red", alpha = 0.5, colour = FALSE) +
-  scale_x_continuous(
-    expand = expand_scale(mult = c(0, 0)),
-    labels = dollar_format(scale = 1e-3, suffix = "K")
-  ) +
-  scale_y_continuous(expand = expand_scale(mult = c(0, 0.1))) +
-  labs(
-    title = "Monthly income distribution",
-    subtitle = "estimated using kernel density function",
-    caption = "Source: IBM Watson",
-    x = NULL,
-    y = NULL
-  ) +
-  theme_minimal()
+densityplot_report(data = data_attrition, xname = "monthly_income")
 ```
+
 
 As we could see from the visualization, it give us more general information, yet give us more confidence in the final insight: the monthly income is highly distributed between 2000 to 2500 dollars value. But it should be noted that we don’t know the exact number of sample that is inside a range in our density plot; instead, we should be more aware of its height, since it is showing how our data is distributed.
 
@@ -264,12 +255,11 @@ ggplot(data_viz, aes(x = monthly_income)) +
 
 The most common form of correlation is between continuous numerical variables. It could show us if the two variables are sharing a variation patterns, which oftenly, very insightful to explaining our dataset.
 
-For example, let’s try to visualize how years at company relate to the monthly income for laboratory technicians samples.
+For example, let’s try to visualize how years at company relate to the monthly income.
 
 ```{r}
 # aggregation
 data_agg <- data_attrition %>% 
-  filter(job_role == "laboratory_technician") %>% 
   group_by(years_at_company) %>% 
   summarise(monthly_income = median(monthly_income)) %>% 
   ungroup()
@@ -294,7 +284,7 @@ ggplot(data_agg, aes(x = years_at_company, y = monthly_income)) +
   theme_minimal()
 ```
 
-As we can see from plot above, there is a relation between years at the company with the monthly income; the longer an employee stay at the company, his/her salary is tend to increase. But geom_smooth() here is playing a crucial role in explaining the relation. From the smoothed line, we could see that the relation is not always linear; there is a downturn after 10 years at the company, before it rising again after 17-19 years.
+As we can see from plot above, there is a relation between years at the company with the monthly income; the longer an employee stay at the company, his/her salary is tend to increase. But geom_smooth() here is playing a crucial role in explaining the relation. From the smoothed line, we could see that the relation is not always linear; there is a downturn pattern.
 
 
 # Modeling

@@ -21,9 +21,9 @@ knitr::opts_chunk$set(
 )
 ```
 
-Many analytics teams get bored. They can not handle interesting tasks because the teams is too busy to produce the daily updates and report they need for business. For example, some teams still use reporting tools likes Microsoft Excel. If any repetitive reports which still using this tool, it might be time-consuming to do the tasks that should not be too difficult. Other analytical tools that are widely applied for data visualization or making reporting purposes built on databases can cause expensive design and maintenance processes.
+Many analytic teams get bored. They can not handle interesting tasks because the teams is too busy to produce the daily updates and report they need for business. For example, some teams still use reporting tools likes Microsoft Excel. If any repetitive reports which still using this tool, it might be time-consuming to do the tasks that should not be too difficult. Other analytic tools that are widely applied for data visualization or making reporting purposes built on databases can cause expensive design and maintenance processes.
 
-In many cases, there is an opportunity to reduce the burden substantially. By using open source tools to automatically process, visualize, and serve data to client with almost no humat effort at all and of course no charge. You will learn how to automate report using R by combining Rmarkdown and Shiny.
+In many cases, there is an opportunity to reduce the burden substantially. By using open source tools to automatically process, visualize, and serve data to client with almost no human effort at all and of course no charge. You will learn how to automate report using R by combining R markdown and Shiny.
 
 This is the syllabus for this course:
 
@@ -37,7 +37,9 @@ This is the syllabus for this course:
   - Structure of basic shiny apps
   - The advantages of shiny
 
-- **Combining Shiny and Rmarkdown**
+- **Combining Shiny and R markdown**
+  
+  - Genereting downloadable reports
 
 - **[Optional] Create Awesome table using `kableExtra`**
 
@@ -205,15 +207,91 @@ The following are the steps to describe image above:
 * **Not required a technical skill**: It requires no prior knowledge of HTML, CSS, or javascript to create a fully functional shiny app.
 * **Complete automation of the app**: A shiny app can be automated to perform a set of operations to produce the desire output based on input.
 
-# Combining Shiny and Rmarkdown
+## Shiny app examples
 
-```{r}
+Below is a some collection of Shiny examples. You can go to https://shiny.rstudio.com/gallery/ for more Shiny User showcases. 
+
+```{r echo=FALSE}
+knitr::include_graphics(path = "assets/shiny-example.png")
+```
+
+
+1. Movie Explorer (https://shiny.rstudio.com/gallery/movie-explorer.html)
+2. Understanding voter's profile in Brazilian election (https://voronoys.shinyapps.io/voronoys/)
+3. COVID-19 tracker (https://vac-lshtm.shinyapps.io/ncov_tracker/)
+
+Our academy’s alumni also making a final project using shiny app to demonstrate their case study https://algorit.ma/our-alumni/.
+
+1. Sentiment Analysis of 5 American Airline brand on Twitter tweets (https://giselavaline.shinyapps.io/SentimentAnalysis/).
+2. Created a tools to assess power plant planning in Indonesia, based on electricity demand forecast and planned infrastucture (https://dody.shinyapps.io/powplan/)
+3. Predicting the movement in Indonesian stock market using machine learning (https://hyacinthrien54.shinyapps.io/Stock/).
+
+# Combining Shiny and Rmarkdown for generating reports
+
+After interect with a Shiny application and getting a parameter as an input, your users may want to download a report in HTML, word, or PDF format. You can easily add the ability to generate report with `knitr` and `rmarkdown` at the click of a a button. The app takes one input value, and passes it as a parameter to an .Rmd document, which is rendered (or knitted) into an HTML output file.
+
+1. We first need a R markdown template that we can use for the report generation.
+
+````markdown
+---
+title: "Dynamic report"
+output: html_document
+params:
+  n: NA
+---
+
+`r ''````{r}
+# The `params` object is available in the document.
+params$n
+```
+
+A plot of `params$n` random points.
+
+
+`r ''````{r}
+plot(rnorm(params$n), rnorm(params$n))
+```
+
+````
+
+2. To generate report from shiny, we use `downloadHandler` and render the template we already created before using `rmarkdown::render`. This function is called each time the user click the download button.
+
+
+```{r eval=FALSE}
+
+shinyApp(
+ ui = fluidPage(
+  sliderInput("slider", "Slider", 1, 100, 50),
+  downloadButton("report", "Generate report")
+ ),
+ server = function(input, output) {
+  output$report <- downloadHandler(
+
+   filename = "report.html", ###### 1
+   content = function(file) {
+
+    tempReport <- file.path(tempdir(), "report.Rmd") ###### 2
+    file.copy("report.Rmd", tempReport, overwrite = TRUE)
+    
+
+    params <- list(n = input$slider) ###### 3
+    
+
+    rmarkdown::render(tempReport, output_file = file, ###### 4
+                      params = params,
+                      envir = new.env(parent = globalenv())
+    )
+   }
+  )
+ }
+)
 
 ```
 
 
-# [Optional] Create awesome table using KableExtra
+This app takes one input value, and passes it as a parameter to an .Rmd document, which is rendered (or knitted) into an HTML output file. The following is a detailed description of each command line (See the number marker):
 
-```{r}
-
-```
+1. For PDF output, change this to **report.pdf**.
+2. Copy the report file to a temporary directory before processing it, in case we don't have write permissions to the current working dir (which can happen when deployed).
+3. Set up parameters to pass to Rmd document.
+4. Knit the document, passing in the `params` list, and eval it in a child of the global environment (this isolates the code in the document from the code in this app).

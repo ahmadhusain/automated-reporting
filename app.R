@@ -10,7 +10,13 @@ ui <- fluidPage(
   selectInput(
     inputId = "gender", 
     label = "Gender",
-    choices = c("female", "male")
+    choices = c("Female", "Male")
+  ),
+  
+  selectInput(
+    inputId = "marital", 
+    label = "Gender",
+    choices = c("Single", "Divorced", "Married")
   ),
   
   textInput(
@@ -58,14 +64,11 @@ server <- function(input, output, session) {
       
       tempReport <- file.path("temp/template.Rmd")
       file.copy(from = "templated.Rmd", to = tempReport, overwrite = TRUE)
+
       
-      # set up parameters to pas to Rmd document
+      paramslist <- list(gender = input$gender, marital = input$marital)
       
-      paramslist <- list(gender = input$gender)
-      
-      # knit the document, passing in the `params` list, and eval it in a
-      # child of the global environment (this isolates the code in the document
-      # from the code in this app)
+
       
       rmarkdown::render(
         input = tempReport,

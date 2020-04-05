@@ -1,0 +1,385 @@
+---
+title: "`r params$title`"
+author: "Team Algoritma"
+output: 
+  pdf_document:
+    toc: true
+    toc_depth: 4
+    df_print: kable
+  html_document:
+    toc: true
+    toc_depth: 4
+    toc_float: 
+      collapsed: false
+    df_print: paged
+    highlight: breezedark
+    theme: united
+    number_section: true
+params:
+  gender:
+    label: "Select Gender"
+    value: Female
+    input: select
+    choices: [Female, Male]
+  marital:
+    label: "Marital Status"
+    value: Single
+    input: select
+    choices: [Single, Divorced, Marrieds]
+  title:
+    label: "Naming Report Title"
+    input: text
+    value: "Report"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE
+)
+```
+
+# The Main Problem
+
+**Use Cases: Employee Retention Analysis**
+
+The objective is to understand what factors contributed most to employee attrition and to create a model that can predict if a certain employee will leave the company or not. The goal also includes helping in formulating different retention strategies on targeted employees. Overall, the implementation of this model will allow management to create better decision-making actions.
+
+```{r}
+library(tidyverse)
+library(scales)
+library(glue)
+library(ggplot2)
+
+source(file = "R/helper.R")
+```
+
+```{r}
+data_attrition <- read_csv("data-attrition.csv") %>% 
+  string_norm() %>% 
+  filter(Marital_Status == params$marital, Gender == params$gender)
+```
+
+
+```{r}
+# aggregation
+data_agg <- data_attrition %>% 
+  group_by(Department, Attrition) %>% 
+  summarise(Freq = n()) %>% 
+  ungroup()
+
+# print some examples
+head(data_agg)
+```
+  
+```{r}
+# prepare visualization data
+data_viz <- data_agg %>% 
+  filter(Attrition == "Yes")
+
+# print some example
+head(data_viz)
+```
+
+# Visualize Data
+
+## Categorical Ranking
+
+For a starter, let’s try to see the ranking of `education field` in terms of number of employee.
+
+```{r}
+# aggregation
+data_agg <- data_attrition %>% 
+  group_by(Education_Field) %>% 
+  summarise(n = n()) %>% 
+  ungroup()
+
+# print some examples
+head(data_agg)
+```
+
+
+```{r}
+# prepare visualization data
+
+data_viz <- data_agg %>% 
+  mutate(
+    Education_Field = Education_Field %>% 
+      str_replace_all(pattern = "_", replacement = " ") %>% 
+      str_squish(),
+    Education_Field = reorder(Education_Field, -n),
+    n_percent = percent(n / sum(n)),
+    label = glue("{n} ({n_percent})")
+  )
+
+highest_edu <- data_viz %>% 
+  arrange(desc(n)) %>% 
+  slice(1) %>% 
+  pull(Education_Field) %>% 
+  as.character()
+
+lowest_edu <- data_viz %>% 
+  arrange(n) %>% 
+  slice(1) %>% 
+  pull(Education_Field) %>% 
+  as.character()
+```
+
+
+
+```{r}
+#visualize
+
+barplot_report(
+  data = data_viz,
+  xname = "Education_Field",
+  yname = "n",
+  title = "Number of employee", 
+  sub = "reported from a batch of employee by education fields",
+  label = TRUE,
+  showlegend = FALSE
+)
+```
+
+We could already see which education field is the highest (`r highest_edu`) or the lowest (`r lowest_edu`), and we could also see the big picture regarding the ranking in terms of number of employee.
+
+For example, let’s try the same visualization, but now using job role as our categorical variable:
+
+```{r}
+# aggregation
+data_agg <- data_attrition %>% 
+  group_by(Job_Role) %>% 
+  summarise(n = n()) %>% 
+  ungroup()
+
+# print some examples
+head(data_agg)
+```
+
+```{r}
+# prepare visualization data
+data_viz <- data_agg %>% 
+  mutate(
+    Job_Role = Job_Role %>% 
+      str_replace_all(pattern = "_", replacement = " ") %>% 
+      str_squish(),
+    Job_Role = reorder(Job_Role, n),
+    n_percent = percent(n / sum(n)),
+    label = glue("{n} ({n_percent})")
+  )
+```
+
+
+```{r}
+# visualize
+
+barplot_report(
+  data = data_viz, 
+  xname = "Job_Role",
+  yname = "n",
+  title = "Number of Employee",
+  sub = "Reported from a batch of employee by job roles",
+  caption = "Source: IBM Watson",
+  flip = TRUE,
+  label = TRUE,
+  showlegend = FALSE
+)
+```
+
+
+visualizing a categorical ranking could help us gaining some insight. But, oftenly, we need to make some breaking down to the ranking in order to gain more insight.
+
+Let’s try, for example, re-visualize the ranking but by breaking down into the attrition status:
+
+```{r}
+# aggregation
+data_agg <- data_attrition %>% 
+  group_by(Job_Role, Attrition) %>% 
+  summarise(n = n()) %>% 
+  ungroup()
+  
+# print some examples
+head(data_agg)
+```
+
+```{r}
+# prepare visualization data
+data_viz <- data_agg %>% 
+  mutate(
+    Job_Role = Job_Role %>%
+      str_replace_all("_", " ") %>% 
+      str_squish(),
+    Job_Role = reorder(Job_Role, n),
+    Attrition = Attrition %>% 
+      str_to_title() %>% 
+      factor(levels = c("Yes", "No"))
+  )
+
+```
+
+
+
+```{r}
+# visualize
+
+barplot_report(
+  data = data_viz,
+  xname = "Job_Role",
+  yname = "n",
+  fillby = "Attrition", 
+  flip = TRUE, 
+  title = "Number of employee",
+  sub = "reported from a batch of employee by job roles",
+  caption = "Source: IBM Watson",
+  showlegend = TRUE
+)
+```
+
+
+```{r}
+high_prop <- data_viz %>% 
+  group_by(Job_Role) %>% 
+  mutate(prop_attrition = n/sum(n)) %>% 
+  ungroup() %>% 
+  filter(Attrition == "Yes") %>% 
+  arrange(desc(prop_attrition)) %>% 
+  slice(1) %>% 
+  pull(Job_Role) %>% 
+  as.character()
+```
+
+This bar plot variation is called stacked bar plot. It help us to see the ranking in general, while also see the share of some more categorical variable inside each levels. For example, even though we still see the original ranking as usual, now we gain the insight that **`r high_prop`** department have the highest proportion of attrition relative to the number of employee inside that department. A very crucial finding for this context.
+
+
+
+## Numerical Value
+
+
+```{r}
+densityplot_report(
+  data = data_attrition,
+  xname = "Monthly_Income",
+  title = "Monthly income distribution",
+  sub = "estimated using kernel density function",
+  caption = "Source: IBM Watson",
+)
+```
+
+
+As we could see from the visualization, it give us more general information, yet give us more confidence in the final insight: the monthly income is highly distributed between 2000 to 2500 dollars value. But it should be noted that we don’t know the exact number of sample that is inside a range in our density plot; instead, we should be more aware of its height, since it is showing how our data is distributed.
+
+
+
+```{r}
+# prepare visualization data
+data_viz <- data_attrition %>% 
+  mutate(
+    Attrition = Attrition %>% 
+      str_to_title() %>% 
+      factor(levels = c("Yes", "No"))
+  )
+```
+```{r}
+# visualize
+
+densityplot_report(
+  data = data_viz,
+  xname = "Monthly_Income",
+  title = "Monthly income distribution",
+  sub = "estimated using kernel density function",
+  caption = "Source: IBM Watson",
+  fillby = "Attrition", showlegend = TRUE
+)
+```
+
+
+
+## Correlation Plot
+
+The most common form of correlation is between continuous numerical variables. It could show us if the two variables are sharing a variation patterns, which oftenly, very insightful to explaining our dataset.
+
+For example, let’s try to visualize how years at company relate to the monthly income.
+
+```{r}
+# aggregation
+data_agg <- data_attrition %>% 
+  group_by(Years_At_Company) %>% 
+  summarise(Monthly_Income = median(Monthly_Income)) %>% 
+  ungroup()
+
+# print some examples
+head(data_agg)
+```
+
+```{r}
+# visualize
+
+scatterplot_report(
+  data = data_agg,
+  xname = "Years_At_Company",
+  yname = "Monthly_Income",
+  title = "The relation of years at the company and monthly income",
+  sub = "using median value from laboratory technician samples",
+  caption = "Source: IBM Watson",
+  axisxcurrency = FALSE
+)
+```
+
+As we can see from plot above, there is a relation between years at the company with the monthly income; the longer an employee stay at the company, his/her salary is tend to increase. But geom_smooth() here is playing a crucial role in explaining the relation. From the smoothed line, we could see that the relation is not always linear; there is a downturn pattern.
+
+
+# Modeling
+
+The objective is to understand what factors contributed most to employee attrition and to create a model that can predict if a certain employee will leave the company or not. The goal also includes helping in formulating different retention strategies on targeted employees. Overall, the implementation of this model will allow management to create better decision-making actions.
+
+In every machine learning task, there are some fundamental steps that highly recommended to be done:
+
+1. Data Pre-processing
+2. Model Fitting
+3. Model Evaluation
+
+```{r}
+set.seed(47)
+library(rsample)
+library(caret)
+
+data_attrition <- data_attrition %>% 
+  mutate(Attrition = as.factor(Attrition))
+
+splitted <- initial_split(data = data_attrition, prop = 0.8, strata = "Attrition")
+train <- training(splitted)
+test <- testing(splitted)
+```
+
+```{r}
+set.seed(47)
+train <- upSample(x = select(train, -Attrition),
+                  y = train$Attrition, 
+                  yname = "Attrition")
+```
+
+```{r}
+model_logit <- glm(Attrition ~ Age + Business_Travel + Department + Education_Field + Environment_Satisfaction + Hourly_Rate + Job_Involvement + Job_Role + Job_Satisfaction + Job_Level + Monthly_Income + Over_Time + Performance_Rating + Relationship_Satisfaction + Total_Working_Years + Work_Life_Balance, data = train, family = "binomial")
+
+stepmodel_logit <- step(model_logit, direction = "backward", trace = FALSE)
+
+tidy(stepmodel_logit)
+```
+
+```{r}
+tidy(stepmodel_logit) %>% 
+  mutate(estimate = round(estimate,2),
+         p.value = round(p.value, 2)) %>% 
+  select(term, estimate, p.value) %>% 
+  arrange(-estimate)
+```
+
+```{r}
+narative_model <- get_narative_model(model = stepmodel_logit, target = "Attrition Status")
+```
+
+
+`r narative_model`
+
+

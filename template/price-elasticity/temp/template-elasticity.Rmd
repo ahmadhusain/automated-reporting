@@ -1,0 +1,236 @@
+---
+title: "Avocado Price"
+author: "Team Algoritma"
+date: "4/5/2020"
+output:
+  pdf_document:
+    toc: true
+    toc_depth: 4
+    df_print: kable
+  html_document:
+    toc: true
+    toc_depth: 4
+    toc_float: 
+      collapsed: false
+    df_print: paged
+    highlight: breezedark
+    theme: united
+    number_section: true
+  word_document:
+    toc: true
+    toc_depth: 4
+    df_print: kable
+params:
+  avocado_region: Albany
+  avocado_year: 2016
+  avocado_type: conventional
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  fig.align = "center"
+)
+```
+
+# The main Problem
+
+**price elasticity of demand**:  Price elasticity is used to understand how supply or demanad change given changes in price to understand the pattern of sales. For instance, some goods are very inelastic, that is, their price do not change very much given changes in supply or demand. For example: People need to buy gasoline to get to work, and so if oil price rise, people will likely still to buy just the same amount of gas. On the other hand some goods are very elastic, their price moves cause substantial changes in its demand or its supply. This report will try to formulated the relation of price and quantity in demand of avocado.
+
+> Price elasticity is addressing the relation between price and quantity of item sold: if we increase the price, say 1 currency unit, how much decrease in item sold that we should expect?
+
+# Example Dataset: Avocado Sales
+
+For price elasticity example, we will use avocado sales Dataset. Here are example observation from the data:
+
+```{r}
+library(tidyverse)
+library(scales)
+library(lubridate)
+library(kableExtra)
+library(glue)
+library(rsample)
+library(MLmetrics)
+library(flextable)
+
+source("helper.R")
+```
+
+
+```{r}
+data_avocado <- read.csv(file = "data-avocados.csv")
+```
+
+```{r}
+head(data_avocado, 10) %>% 
+  flextable() %>% 
+  autofit()
+```
+
+
+```{r}
+densityplot_report(
+  data = data_avocado,
+  xname = "price", 
+  fillby = "type",
+  title = "Distribution of Avocado Price",
+  sub = "Organic vs Conventional Cultivation",
+  showlegend = TRUE
+)
+```
+
+We can look that organic avocado tend to more expensive. Seems make sense, because their cultivation is more expensive and we all like natural product and willing to pay a higher price for them. But the prices is does not only depend on the type. Let's look at avocado price from various regions in different years. As an example case, we will use the sales data in **`r params$avocado_region`** for **`r params$avocado_type`** avocados in **`r params$avocado_year`**:
+
+```{r}
+# make a copy
+data_clean <- data_avocado
+
+# filter to specific groups
+data_clean <- data_clean %>%
+  filter(
+    region == params$avocado_region,
+    year(date) == params$avocado_year,
+    type == params$avocado_type
+  )
+```
+
+
+```{r}
+head(data_clean, 10) %>%
+  flextable() %>% 
+  autofit()
+```
+
+
+# Exploratory Data Analysis
+
+```{r}
+data_agg <- data_clean %>% 
+  group_by(month = month(date, label = TRUE, abbr = FALSE)) %>% 
+  summarise(total_quantity = sum(quantity)) %>% 
+  ungroup() %>% 
+  mutate(label = glue("{comma(total_quantity)}"))
+
+top_month <- data_agg %>% 
+  arrange(desc(total_quantity)) %>% 
+  slice(1) %>% 
+  pull(month) %>% 
+  as.character()
+
+tot_quantity <- data_agg %>% 
+  arrange(desc(total_quantity)) %>% 
+  slice(1) %>% 
+  pull(label)
+
+barplot_report(
+  data = data_agg,
+  xname = "month",
+  yname = "total_quantity",
+  title = "Monthly Quantity of Avocado Sold",
+  sub = glue(
+      "for {params$avocado_type} avocados",
+      " in {params$avocado_region},",
+      " {params$avocado_year}"
+  ),
+  
+  label = TRUE,
+  flip = TRUE
+  
+)
+```
+
+
+We can see the highest avocado sales is on **`r top_month`** by **`r tot_quantity`**. Next, we want to build a simple model statistics called regression to predict the quantity given the price information. In exploring a regression problem, one of the fundamental exploratory step is ensuring whether we really have an appropriate feature(s) to predict our target variables. One of the most common visualization is using scatter plot.
+
+```{r}
+scatterplot_report(
+  data = data_clean,
+  xname = "price",
+  yname = "quantity",
+  axisycurrency = FALSE,
+  title = "Price and Quantity of Avocados Sales",
+  sub = glue(
+      "for {params$avocado_type} avocados",
+      " in {params$avocado_region},",
+      " {params$avocado_year}"
+  )
+)
+```
+
+# Modeling with Regression Model
+
+```{r}
+# set seed
+set.seed(100)
+
+# create initial split
+splitted <- initial_split(data_clean, prop = 0.6)
+data_train <- training(splitted)
+data_test <- testing(splitted)
+```
+
+```{r}
+model_lm <- lm(quantity ~ price, data = data_train)
+
+# tidy the model
+data_model <- tidy(model_lm) %>%
+  rename(
+    Terms = term,
+    Coefficients = estimate,
+    `Standard Error` = std.error,
+    `t-statistics` = statistic,
+    `p-value` = p.value
+  )
+
+coefs <- data_model %>% 
+  filter(Terms == "price") %>% 
+  pull(Coefficients)
+
+coefs_print <- unit_format(scale = 1e-6, accuracy = 1e-4, unit = "Million")(abs(coefs))
+```
+
+
+Model fitting process is–oftenly–very straightforward. But the challenge is more to how to communicate our model, instead of just make a model and doing prediction. 
+
+Since we use Ordinary Least Squares (OLS), one of its many perks is its interpretability. As shown in table below, from our model we could suggest that every 1 dollar increase in the price, will **`r ifelse(coefs > 0, "increase", "reduce")`** the total avocados consumption in a week (for **`r str_to_title(params$avocado_region)`** and **`r params$avocado_type`**av ocados) by **`r coefs_print`**.
+
+```{r}
+# print the model
+data_model %>%  
+  flextable() %>% 
+  autofit()
+```
+
+Making prediction using our model is also very straight forward; and still, the challenge is how to communicate the prediction. We could either represent them as a table, or visualization if appropriate.
+
+---
+
+```{r}
+# tidy the data
+data_print <- data_test %>% 
+  mutate(prediction = predict(model_lm, data_test)) %>% 
+  select(price, quantity, prediction)
+
+# print the results
+head(data_print, 5) %>% 
+  flextable() %>% 
+  autofit()
+```
+
+
+### Evaluating Model Prediction
+
+
+```{r}
+# calculate errors
+data_prediction <- data_test %>% 
+  mutate(prediction = predict(model_lm, data_test))
+ 
+coefs <- MAE(y_pred = data_prediction$prediction, y_true = data_prediction$quantity) 
+
+coefs_print <- unit_format(scale = 1e-3, accuracy = 1, unit = "K")(coefs)
+```
+
+As a data scientist, we need to ensure that our model is already the best model that we could make; or even if our model is not perfect (which is very likely!), we could report how much is the error expectation. This is where model evaluation very useful. For example, our model give an Mean Average Error (MAE) value of `r coefs_print` in unseen dataset. This could be intrepreted as upper and lower confidence that we could apply to our prediction, if we need any.

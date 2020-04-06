@@ -56,10 +56,6 @@ This is the second course of _Automate: Business Reporting with R_. The objectiv
     + Data Cleansing
     + Data Transformation
 
-* **Descriptive Statistics**
-
-* **Automated Reporting of Object in R**
-
 ***
 
 ## Library and Setup
@@ -102,7 +98,7 @@ Once we have clean data, the next step is to transform it. _Data transformation_
 
 As an example is to see communities of people in **Jakarta** instead of in **Indonesia**. This is done by creating new data from our dataset by subsetting, summarizing, or adding new variables or information that explain our data. 
 
-Once we have transformed our data, we can perform some exploratory data analysis using **Descriptive Statistics** and _visualize_ them through charts to improve our understanding of the data. We may also build a machine learning model to predict future values.
+Once we have transformed our data, we can perform some exploratory data analysis using descriptive statistics and _visualize_ them through charts to improve our understanding of the data. We may also build a machine learning model to predict future values.
 
 The last step of data science work is _communication_. It is a critical part of any data analysis project. In this workshop, we will communicate our findings on data through business reports using Rmarkdown.
 

@@ -1,0 +1,9 @@
+{
+    "path" : "H:/automated-reporting/template/price-elasticity/temp",
+    "sortOrder" : [
+        {
+            "ascending" : true,
+            "columnIndex" : 2
+        }
+    ]
+}

@@ -3069,7 +3069,7 @@ div.tocify {
 <blockquote>
 <p>Supervised learning: We feed our model training examples (input) and tag each of these example with a corresponding target, and is so doing, allow our model to produce a function that maps our input to its target.</p>
 </blockquote>
-<p>Supervised learning algorithms allows machines to do prediction analysis for a specific target. Supervised learning are used to solve for classification and regression problems. Good examples for the financial industry are credit risk scoring (regression or classification), loan default prediction (classification), and customer lifetime value (regression). Supervised learning is also useful for performing predictive analytics on Employee Attrition data, which we are going to explore in the following section.</p>
+<p>Supervised learning algorithms allows machines to do predictive analytics for a specific target. Supervised learning are used to solve for classification and regression problems. Good examples for the financial industry are credit risk scoring (regression or classification), loan default prediction (classification), and customer lifetime value (regression). Supervised learning is also useful for performing predictive analytics on Employee Attrition data, which we are going to explore in the following section.</p>
 <blockquote>
 <p>Unsupervised learning: If we feed our model training examples (input) without any labels, it is unsupervised learning.</p>
 </blockquote>
@@ -3128,7 +3128,7 @@ div.tocify {
 </ul>
 <div id="modeling-employee-retention-for-predictive-analytics" class="section level3">
 <h3><span class="header-section-number">2.2.1</span> Modeling Employee Retention for Predictive Analytics</h3>
-<p>In logistic regression, we can use <code>stepwise</code> too for the non-business wise feature selection.e can use an algorithm called Logistic Regression to build a prediction model for employee retention. In R, we can pass the data and the prediction scenario (formula) to the function <code>glm()</code>. Additionally, we can also perform feature selection to improve the model performance. In this example we use the non-business wise stepwise regression (using the function step())</p>
+<p>We can use an algorithm called Logistic Regression to build a prediction model for employee retention. In R, we can pass the data and the prediction scenario (formula) to the function <code>glm()</code>. Additionally, we can also perform feature selection to improve the model performance. In this example we use the non-business wise stepwise regression (using the function <code>step()</code>).</p>
 <div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb65-1" title="1">model_logit &lt;-<span class="st"> </span><span class="kw">glm</span>(<span class="dt">formula =</span> Attrition <span class="op">~</span>., </a>
 <a class="sourceLine" id="cb65-2" title="2">                   <span class="dt">data =</span> train, </a>
 <a class="sourceLine" id="cb65-3" title="3">                   <span class="dt">family =</span> <span class="st">&quot;binomial&quot;</span>)</a>
@@ -3145,9 +3145,9 @@ div.tocify {
 </div>
 <div id="model-interpretation" class="section level3">
 <h3><span class="header-section-number">2.2.2</span> Model Interpretation</h3>
-<p>Using the model we have built with stepwise regression, we can create a likelihood table and analyze the contribution of each variable in determining probability. Stepwise regression will calculate a coefficient for each variable. The coefficient reflects variable contribution to the prediction result and can be transformed into odds ratio. For example, let’s take a coefficient value from a numerical variable Age that is -0.015. This negative coefficient can be interpreted as:</p>
+<p>Using the model we have built with stepwise regression, we can create a likelihood table and analyze the contribution of each variable in determining probability. Stepwise regression will calculate a coefficient (estimate) for each variable. The coefficient reflects variable contribution to the prediction result and can be transformed into odds ratio. For example, let’s take a coefficient value from a numerical variable Years with Current Manager that is -0.09. This negative coefficient can be interpreted as:</p>
 <blockquote>
-<p>The older the employee, the smaller chance to leave.</p>
+<p>The longer the years spent with the Current Manager, the smaller employee’s chance to leave.</p>
 </blockquote>
 <div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb66-1" title="1"><span class="kw">tidy</span>(stepmodel_logit) <span class="op">%&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb66-2" title="2"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">odds_ratio =</span> <span class="kw">round</span>(<span class="kw">exp</span>(estimate),<span class="dv">2</span>),</a>
@@ -3163,8 +3163,8 @@ div.tocify {
 </div>
 <p>Here are a quick summary of the table above:</p>
 <ol style="list-style-type: decimal">
-<li>Overtime has a positive coefficient with the odds ratio yes to no is 5.32. This says that the event of an employee who works overtime and leaves the company is about 5.32 more likely than the employee who is not working overtime</li>
-<li>The variables are linked (directly or indirectly) to work-life-balance (Job Satisfaction, Environment Satisfaction, Job Involvement, ) have a negative coefficient. We can say that the more satisfied and the higher job involvement the employee, the less likely that employees will leave the company.</li>
+<li>Overtime has a positive coefficient with the odds ratio yes to no is 5.32. This says that the event of an employee who works overtime and leaves the company is about 5.32 more likely than the employee who is not working overtime.</li>
+<li>The variables are linked (directly or indirectly) to work-life-balance (Job Satisfaction, Environment Satisfaction, Job Involvement) have a negative coefficient. We can say that the more satisfied and the higher job involvement the employee, the less likely that employees will leave the company.</li>
 </ol>
 </div>
 <div id="predicting" class="section level3">

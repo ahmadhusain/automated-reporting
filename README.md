@@ -23,6 +23,6 @@ The syllabus includes:
   + Combining Shiny and R Markdown
   
 The course material in HTML document can be accessed inside its respective folder, including its additional materials. 
-You can also access the full course material in the bookdown format at [automate-reporting.netlify.com](automate-reporting.netlify.com).
+You can also access the full course material in the bookdown format at [automate-reporting.netlify.com](https://automate-reporting.netlify.com/).
 
 Happy LeaRning!
